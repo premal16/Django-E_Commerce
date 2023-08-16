@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import get_user_model
-from .models import CustomUser,UserProfile,Product
+from .models import CustomUser,UserProfile,Product,Order
 from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import logout
@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from .forms import ProductForm
+from django.views.generic import ListView, DetailView
 
 @login_required(login_url='login/')
 def homePage(request):
@@ -160,3 +161,24 @@ def add_product(request):
     else:
         form = ProductForm()
     return render(request, 'add_product.html', {'form': form})
+
+
+
+class OrderListView(ListView):
+    model = Order
+    template_name = 'order_list.html'
+    context_object_name = 'orders'
+
+class OrderDetailView(DetailView):
+    model = Order
+    template_name = 'order_detail.html'
+    context_object_name = 'order'
+
+def change_order_status(request, order_id):
+    order = get_object_or_404(Order, pk=order_id)
+    if request.method == 'POST':
+        new_status = request.POST.get('new_status')
+        if new_status:
+            order.status = new_status
+            order.save()
+    return redirect('admin-order-list')

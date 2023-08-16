@@ -1,0 +1,22 @@
+<table class="custom-order-list">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Total Amount</th>
+            <th>Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for obj in result %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+                <td>{{ obj.id }}</td>
+                <td>{{ obj.user }}</td>
+                <td>{{ obj.status }}</td>
+                <td>{{ obj.total_amount }}</td>
+                <td>{{ obj.timestamp }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
