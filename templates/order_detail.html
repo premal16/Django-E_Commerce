@@ -44,16 +44,20 @@
                 <thead>
                     <tr>
                         <th>Product</th>
+                        <th>Product Category</th>
                         <th>Quantity</th>
-                        <th>Price</th>
+                        <th>Price</th> 
+                        <th>Total Price</th>  
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in order.orderitem_set.all %}
                         <tr>
                             <td>{{ item.product.label }}</td>
+                            <td>{{ item.product.category }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>{{ item.price }}</td>
+                            <td>{{ item.total_price }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

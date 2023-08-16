@@ -150,8 +150,6 @@ def product_delete(request, product_id):
     return render(request, 'product_delete.html', {'product': product})
 
 
-
-
 def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -163,7 +161,6 @@ def add_product(request):
     return render(request, 'add_product.html', {'form': form})
 
 
-
 class OrderListView(ListView):
     model = Order
     template_name = 'order_list.html'
@@ -173,6 +170,16 @@ class OrderDetailView(DetailView):
     model = Order
     template_name = 'order_detail.html'
     context_object_name = 'order'
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     order = context['order']
+    #     for item in order.orderitem_set.all():
+    #         print(item.price)
+    #         print(item.quantity)
+    #         item.total_price = item.quantity * item.price
+    #         print(item.total_price)
+    #     return context
 
 def change_order_status(request, order_id):
     order = get_object_or_404(Order, pk=order_id)

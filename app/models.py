@@ -98,3 +98,6 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"Item for Order {self.order_id} - {self.product.label}"
+    
+    def total_price(self):
+        return self.quantity * self.price
