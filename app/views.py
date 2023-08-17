@@ -14,8 +14,9 @@ from django.views.generic import ListView, DetailView
 @login_required(login_url='login/')
 def homePage(request):
     products = Product.objects.all()
+    orders = Order.objects.all()
     user = CustomUser.objects.all()
-    context = {'products': products,'user':user}
+    context = {'products': products,'user':user,'orders':orders}
     return render(request,'index.html',context)
 
 def register_and_login(request):
@@ -166,20 +167,11 @@ class OrderListView(ListView):
     template_name = 'order_list.html'
     context_object_name = 'orders'
 
+
 class OrderDetailView(DetailView):
     model = Order
     template_name = 'order_detail.html'
     context_object_name = 'order'
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     order = context['order']
-    #     for item in order.orderitem_set.all():
-    #         print(item.price)
-    #         print(item.quantity)
-    #         item.total_price = item.quantity * item.price
-    #         print(item.total_price)
-    #     return context
 
 def change_order_status(request, order_id):
     order = get_object_or_404(Order, pk=order_id)
@@ -189,3 +181,19 @@ def change_order_status(request, order_id):
             order.status = new_status
             order.save()
     return redirect('admin-order-list')
+
+def user(request):
+    products = Product.objects.all()
+    orders = Order.objects.all()
+    users = CustomUser.objects.all()
+    context = {'products': products,'users':users,'orders':orders}
+    return render(request,'user_list.html',context)
+
+# def userprofile(request,user_id):
+#     user = get_object_or_404(UserProfile,pk=user_id)
+#     context = {'user': user}
+#     return render(request, 'user_profile.html', context)
+class UserDetailview(DetailView):
+    model = UserProfile
+    template_name = 'user_profile.html'
+    context_object_name = 'user'

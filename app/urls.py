@@ -4,7 +4,6 @@ from django.contrib import admin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.homePage, name='home'),
     path('login/', views.login, name='login'),
     path('register/', views.register_and_login, name='register'),
     path('profile/', views.profilePage, name='profile'),
@@ -18,6 +17,10 @@ urlpatterns = [
     path('orders/', views.OrderListView.as_view(), name='admin-order-list'),
     path('orders/<int:pk>/', views.OrderDetailView.as_view(), name='admin-order-detail'),
     path('order/<int:order_id>/change-status/', views.change_order_status, name='admin-order-change-status'),
+    path('',views.homePage, name='home'),
+    path('users/',views.user, name='user'),
+    path('users/<int:pk>',views.UserDetailview.as_view(), name='user-profile'),
+
 
     
 ]

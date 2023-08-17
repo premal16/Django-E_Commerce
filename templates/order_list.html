@@ -42,10 +42,13 @@
                 <th>Total Amount</th>
                 <th>Timestamp</th>
                 <th>Actions</th>
+                <!-- <th>count</th> -->
+
 
             </tr>
         </thead>
         <tbody>
+            
             {% for order in orders %}
                 <tr>
                     <td><a href="{% url 'admin-order-detail' order.pk %}" class="text-primary">{{ order.id }}</a></td>
