@@ -634,7 +634,7 @@
               <div class="card info-card customers-card">
 
                 <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <a class="icon" href="{% url 'user' %}" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                   <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                     <li class="dropdown-header text-start">
                       <h6>Filter</h6>
@@ -647,6 +647,7 @@
                 </div>
 
                 <div class="card-body">
+                  <a href="{% url 'user' %}">
                   <h5 class="card-title">Customers </h5>
 
                   <div class="d-flex align-items-center">
@@ -658,7 +659,7 @@
                       <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span>
 
                     </div>
-                  </div>
+                  </div></a>
 
                 </div>
               </div>

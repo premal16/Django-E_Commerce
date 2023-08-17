@@ -193,7 +193,10 @@ def user(request):
 #     user = get_object_or_404(UserProfile,pk=user_id)
 #     context = {'user': user}
 #     return render(request, 'user_profile.html', context)
+
+
 class UserDetailview(DetailView):
+    print("@@@@@@@@@@@@@")
     model = UserProfile
     template_name = 'user_profile.html'
     context_object_name = 'user'
