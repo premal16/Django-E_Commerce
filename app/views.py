@@ -17,7 +17,7 @@ def homePage(request):
     orders = Order.objects.all()
     user = CustomUser.objects.all()
     context = {'products': products,'user':user,'orders':orders}
-    return render(request,'index.html',context)
+    return render(request,'index1.html',context)
 
 def register_and_login(request):
     try:
