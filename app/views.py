@@ -10,14 +10,14 @@ from django.contrib.auth.decorators import login_required,user_passes_test
 from django.shortcuts import render, get_object_or_404
 from .forms import ProductForm
 from django.views.generic import ListView, DetailView
-
+from django.contrib import messages
 @login_required(login_url='login/')
 def homePage(request):
     products = Product.objects.all()
     orders = Order.objects.all()
     user = CustomUser.objects.all()
     context = {'products': products,'user':user,'orders':orders}
-    return render(request,'index1.html',context)
+    return render(request,'index.html',context)
 
 def register_and_login(request):
     try:
@@ -113,6 +113,66 @@ def logout_view(request):
 
 
 
+
+# @login_required(login_url='/login/')
+# def edit_profile(request, user_id=None):
+#     error_message = None 
+#     if user_id is None:
+#         user = request.user
+#         profile, created = UserProfile.objects.get_or_create(user=user)
+#         print("this is logged user...............")
+#     else:
+#         if request.user.is_superuser:
+#             user = CustomUser.objects.get(id=user_id)
+#             profile = user.userprofile
+#             print("this is by admin..............")
+#         else:
+#             return HttpResponse("You don't have permission to edit this user's profile.")
+#         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+#     if request.method == 'POST':
+#         try:
+#             about = request.POST.get('about', '')
+#             profile_pic = request.FILES.get('profile_pic', None)
+#             job_title = request.POST.get('job_title', '')
+#             country = request.POST.get('country', '')
+#             address = request.POST.get('address', '')
+#             email = request.POST.get('email', '')
+#             mobile_number = request.POST.get('mobile_number')
+            
+#             if email != user.email and CustomUser.objects.filter(email=email).exclude(id=user.id).exists():
+#                 messages.error(request, "The provided email is already in use.")
+#             else:
+#                 profile.job_title = job_title
+#                 # Update profile fields and save
+#                 profile.about = about
+#                 profile.country = country
+#                 profile.address = address
+#                 profile.mobile_number = mobile_number
+#                 user.email = email
+#                 user.save()
+#                 if profile_pic:
+#                     profile.profile_pic = profile_pic
+#                 profile.save()
+#                 print(user_id)
+#                 if user_id is None:
+#                     print("innnnn")
+#                     messages.success(request, "Profile updated successfully.")
+#                     return redirect('profile')
+#                 else:
+#                     print('out.......')
+#                     messages.success(request, "Profile updated successfully.")
+#                     return redirect('user-profile', pk=user.id)  
+
+#         except IntegrityError as e:
+#             if 'UNIQUE constraint' in str(e) and 'email' in str(e):
+#                 messages.error(request, "The provided email is already in use.")
+#             else:
+#                 messages.error(request, "An error occurred while updating the profile.") 
+#         return redirect('user-profile', pk=user.id)  
+            
+    
+#     return render(request, 'user_profile.html')
+
 @login_required(login_url='/login/')
 def edit_profile(request, user_id=None):
     error_message = None 
@@ -149,6 +209,8 @@ def edit_profile(request, user_id=None):
             if profile_pic:
                 profile.profile_pic = profile_pic
             profile.save()
+            messages.success(request, "Profile data updated successfully!")
+
             print(user_id)
             if user_id is None:
                 print("innnnn")
@@ -160,19 +222,14 @@ def edit_profile(request, user_id=None):
 
         except IntegrityError as e:
             if 'UNIQUE constraint' in str(e) and 'email' in str(e):
-                error_message = "The provided email is already in use."
+                messages.error(request, "The provided email is already in use.")
             else:
-                error_message = "An error occurred while updating the profile." 
-    # return render(request, 'profile.html', {'error_message': error_message})
+                messages.error(request, "An error occurred while updating the profile.") 
+            return redirect('user-profile', pk=user.id)  
+
 
 
     return render(request, 'user_profile.html', {'error_message': error_message})
-
-
-
-
-
-
 @login_required(login_url='/login/')
 def change_password(request):
     try:

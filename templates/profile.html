@@ -13,11 +13,15 @@
     </ol>
   </nav>
 </div><!-- End Page Title -->
-{% if error_message %}
-<div class="alert alert-danger mt-3">
-    {{ error_message }}
-</div>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {{ message }}
+        </div>
+    {% endfor %}
 {% endif %}
+
 <section class="section profile">
   <div class="row">
     <div class="col-xl-4">
