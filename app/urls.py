@@ -24,4 +24,5 @@ urlpatterns = [
     path('users/',views.user, name='user'),
     path('users/<int:pk>/',views.UserDetailview.as_view(), name='user-profile'),
     path('users/delete/<int:user_id>/', views.custom_user_delete, name='custom-user-delete'),
+    path('products/', views.product_list, name='product-list'),
 ]

@@ -222,14 +222,14 @@ def edit_profile(request, user_id=None):
 
         except IntegrityError as e:
             if 'UNIQUE constraint' in str(e) and 'email' in str(e):
-                messages.error(request, "The provided email is already in use.")
+                messages.error(request, "The provided email is already in use....")
             else:
                 messages.error(request, "An error occurred while updating the profile.") 
             return redirect('user-profile', pk=user.id)  
 
+    return render(request, 'user_profile.html')
 
 
-    return render(request, 'user_profile.html', {'error_message': error_message})
 @login_required(login_url='/login/')
 def change_password(request):
     try:
@@ -245,7 +245,7 @@ def change_password(request):
                 logout(request)
                 return redirect('login')  
             else:
-                messages.error(request, "Password change failed. Please check your inputs.")
+                messages.error(request, "Password change failed. Please check your inputs....")
             
         return render(request, 'profile.html')
     except Exception as e:
@@ -317,14 +317,12 @@ class UserDetailview(DetailView):
     context_object_name = 'user'
 
 
-
 CustomUser = get_user_model()
 @login_required
 @user_passes_test(lambda user: user.is_superuser)
 def custom_user_delete(request, user_id):
     user = CustomUser.objects.get(id=user_id)
     print(user)
-    
     if request.method == 'POST':
         if user.is_superuser:
             messages.error(request, "Cannot delete a superuser.")
@@ -333,3 +331,10 @@ def custom_user_delete(request, user_id):
             messages.success(request, f"User {user.username} has been deleted.")
         return redirect('user') 
     return render(request, 'user_list.html', {'user': user})
+
+
+
+def product_list(request):
+    products = Product.objects.all()  
+    context = {'products': products}
+    return render(request, 'product_list.html', context)

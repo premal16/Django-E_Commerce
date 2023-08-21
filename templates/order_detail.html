@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 
+  
 <div class="custom-order-detail">
     <h2 class="mb-3">Order Detail - {{ order }}</h2>
     {% for item in order.orderitem_set.all %}
-
     <div class="card">
         <div class="card-body">
             <p class="mb-2"><strong>Status:</strong> {{ order.status }}</p>

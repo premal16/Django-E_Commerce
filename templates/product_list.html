@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="col-12">
+    <div class="card top-selling overflow-auto">
+      <div class="card-body pb-0">
+        <h5 class="card-title">Products <span>| Today</span></h5>
+
+        <table class="table table-borderless">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Preview</th>
+              <th scope="col">Product</th>
+              <th scope="col">Price</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Sold</th>
+              <hr>
+            </tr>
+          </thead>
+          <tbody>
+            
+            {% for product in products %}
+            <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+              <td><a href="{% url 'product-detail' product.id %}"><img src="{{ product.product_image.url }}" alt=""></a></td>
+              <td><a href="{% url 'product-detail' product.id %}" class="text-primary fw-bold">{{product.label}}</a></td>
+              <td class="fw-bold">{{product.price}} ₹</td>
+              <td class="fw-bold">{{product.quantity}}</td>
+              <td class="fw-bold">-</td>
+            </tr>
+            {% endfor %} 
+          </tbody>
+        </table><hr>
+      </div>
+    </div>
+  </div>
+{% endblock %}
