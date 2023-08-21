@@ -8,9 +8,11 @@ from django.db import IntegrityError
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.shortcuts import render, get_object_or_404
-from .forms import ProductForm
+from .forms import ProductForm,ProductForm1
 from django.views.generic import ListView, DetailView
 from django.contrib import messages
+
+
 @login_required(login_url='login/')
 def homePage(request):
     products = Product.objects.all()
@@ -261,6 +263,22 @@ def product_detail(request, product_id):
     context = {'product': product}
     return render(request, 'product_detail.html', context)
 
+def product_update(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+
+    print(product)
+    if request.method == 'POST':
+        form = ProductForm1(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            print("11111111111")
+            return redirect('product-detail', product_id=product_id)
+    else:
+        # print("innnn",form)
+        form = ProductForm(instance=product)
+    context = {'form': form, 'product': product}
+    print('121212')
+    return render(request, 'product_update.html', context)
 
 
 def product_delete(request, product_id):
@@ -309,13 +327,11 @@ def user(request):
     context = {'products': products,'users':users,'orders':orders}
     return render(request,'user_list.html',context)
 
-
 class UserDetailview(DetailView):
     print("@@@@@@@@@@@@@")
     model = UserProfile
     template_name = 'user_profile.html'
     context_object_name = 'user'
-
 
 CustomUser = get_user_model()
 @login_required
