@@ -356,7 +356,3 @@ def product_list(request):
     context = {'products': products}
     return render(request, 'product_list.html', context)
 
-
-
-def custom_404(request, exception):
-    return render(request, '404.html')
