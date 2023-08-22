@@ -10,12 +10,16 @@
 # General
 --------------------------------------------------------------*/
 
-:root {
-  scroll-behavior: smooth;
-}
 
 .file-input {
   display: none;
+}
+.file-upload-label:hover {
+  background-color: #e0e0e0;
+}
+
+:root {
+  scroll-behavior: smooth;
 }
 
 body {

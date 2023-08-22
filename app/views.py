@@ -11,7 +11,7 @@ from django.shortcuts import render, get_object_or_404
 from .forms import ProductForm,ProductForm1
 from django.views.generic import ListView, DetailView
 from django.contrib import messages
-
+from django.http import Http404
 
 @login_required(login_url='login/')
 def homePage(request):
@@ -194,6 +194,7 @@ def edit_profile(request, user_id=None):
     if request.method == 'POST':
         try:
             about = request.POST.get('about', '')
+            name = request.POST.get('fname','')
             profile_pic = request.FILES.get('profile_pic', None)
             job_title = request.POST.get('job_title', '')
             country = request.POST.get('country', '')
@@ -207,6 +208,7 @@ def edit_profile(request, user_id=None):
             profile.address = address
             profile.mobile_number = mobile_number
             user.email = email
+            user.name = name
             user.save()
             if profile_pic:
                 profile.profile_pic = profile_pic
@@ -349,8 +351,12 @@ def custom_user_delete(request, user_id):
     return render(request, 'user_list.html', {'user': user})
 
 
-
 def product_list(request):
     products = Product.objects.all()  
     context = {'products': products}
     return render(request, 'product_list.html', context)
+
+
+
+def custom_404(request, exception):
+    return render(request, '404.html')
