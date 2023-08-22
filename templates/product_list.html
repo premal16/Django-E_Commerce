@@ -3,37 +3,65 @@
 {% block content %}
 
 <div class="col-12">
-    <div class="card top-selling overflow-auto">
-      <div class="card-body pb-0">
-        <h5 class="card-title">Products <span>| Today</span></h5>
-
-        <table class="table table-borderless">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Product Image</th>
-              <th scope="col">Product</th>
-              <th scope="col">Price</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Sold</th>
-              <hr>
-            </tr>
-          </thead>
-          <tbody>
-            
-            {% for product in products %}
-            <tr>
-            <th scope="row">{{ forloop.counter }}</th>
-              <td><a href="{% url 'product-detail' product.id %}"><img src="{{ product.product_image.url }}" alt=""></a></td>
-              <td><a href="{% url 'product-detail' product.id %}" class="text-primary fw-bold">{{product.label}}</a><br><b>Category:- </b>{{product.category}}</td>
-              <td class="fw-bold">{{product.price}} ₹</td>
-              <td class="fw-bold">{{product.quantity}}</td>
-              <td class="fw-bold">-</td>
-            </tr>
-            {% endfor %} 
-          </tbody>
-        </table><hr>
+  <!-- Add this code above the table in your template -->
+  <div class="mb-3">
+    <form method="GET">
+      <label for="category" class="form-label">Select Category:</label>
+      <div class="d-flex">
+        <select name="category" id="category" class="form-select">
+          <option value="" selected>All Categories</option>
+          {% for category in categories %}
+            <option value="{{ category.id }}">{{ category.name }}</option>
+          {% endfor %}
+        </select>
+        <div>&nbsp</div>
+        <button type="submit" class="btn btn-primary">Filter</button>
       </div>
+    </form>
+  </div>
+  
+  <div class="card top-selling overflow-auto">
+    <div class="card-body pb-0">
+      {% if selected_category %}
+        <h4 class="card-title">{{ selected_category.name }}</h4>
+      {% else %}
+        <h5 class="card-title">All Products</h5>
+      {% endif %}
+      <table class="table table-borderless">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Product Image</th>
+            <th scope="col">Product</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Sold</th>
+            <hr>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
+          <tr>
+              <th scope="row">{{ forloop.counter }}</th>
+              <td>
+                  <a href="{% url 'product-detail' product.id %}">
+                      <div class="product-image-box">
+                          <img src="{{ product.product_image.url }}" alt="">
+                      </div>
+                  </a>
+              </td>
+              <td>
+                  <a href="{% url 'product-detail' product.id %}" class="text-primary fw-bold">{{ product.label }}</a>
+                  <br><b>Category:- </b>{{ product.category }}
+              </td>
+              <td class="fw-bold">{{ product.price }} ₹</td>
+              <td class="fw-bold">{{ product.quantity }}</td>
+              <td class="fw-bold">-</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+      </table><hr>
     </div>
   </div>
+</div>
 {% endblock %}

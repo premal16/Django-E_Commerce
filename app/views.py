@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth import get_user_model
-from .models import CustomUser,UserProfile,Product,Order
+from .models import CustomUser,UserProfile,Product,Order,Category
 from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import logout
@@ -351,8 +351,34 @@ def custom_user_delete(request, user_id):
     return render(request, 'user_list.html', {'user': user})
 
 
-def product_list(request):
-    products = Product.objects.all()  
-    context = {'products': products}
-    return render(request, 'product_list.html', context)
+# def product_list(request):
+#     products = Product.objects.all()  
+#     context = {'products': products}
+#     return render(request, 'product_list.html', context)
 
+def category_list(request):
+    categories = Category.objects.all()
+    return render(request, 'product_category.html', {'categories': categories})
+
+# def product_list_by_category(request, category_id):
+#     category = Category.objects.get(id=category_id)
+#     products = Product.objects.filter(category=category)
+#     print(request)
+#     print(products)
+#     print(category)
+#     return render(request, 'product_list.html', {'category': category, 'products': products})
+
+
+def product_list(request):
+    categories = Category.objects.all()
+    products = Product.objects.all()
+
+    category_id = request.GET.get('category')
+    selected_category = None
+
+    if category_id:
+        products = products.filter(category_id=category_id)
+        selected_category = Category.objects.get(id=category_id)
+
+    context = {'products': products, 'categories': categories, 'selected_category': selected_category}
+    return render(request, 'product_list.html', context)
