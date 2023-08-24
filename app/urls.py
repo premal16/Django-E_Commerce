@@ -27,7 +27,15 @@ urlpatterns = [
     path('users/delete/<int:user_id>/', views.custom_user_delete, name='custom-user-delete'),
     path('products/', views.product_list, name='product-list'),
     path('product/update/<int:product_id>/', views.product_update, name='product-update'),
+    path('session-try/', views.session_try, name='session-try'),
+
     # path('categories/', views.category_list, name='category-list'),
     # path('products/category/<int:category_id>/', views.product_list_by_category, name='product-list-by-category'),
+
+
+
+    path('user-home/', views.user_home, name='user-home'),
+
+
 ]
 

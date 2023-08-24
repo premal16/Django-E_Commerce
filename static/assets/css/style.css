@@ -1222,12 +1222,13 @@ h6 {
 /*--------------------------------------------------------------
 # Footer
 --------------------------------------------------------------*/
-.footer {
+/* .footer {
   padding: 20px 0;
   font-size: 14px;
   transition: all 0.3s;
   border-top: 1px solid #cddfff;
 }
+
 
 .footer .copyright {
   text-align: center;
@@ -1239,7 +1240,40 @@ h6 {
   text-align: center;
   font-size: 13px;
   color: #012970;
+} */
+
+
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#footer {
+  
+  padding: 20px 0;
+  font-size: 14px;
+  border-top: 1px solid #cddfff;
+  text-align: center;
+  transition: all 0.3s;
+  margin-top: auto; /* Pushes the footer to the bottom */
+}
+
+#footer .copyright, #footer .credits {
+  color: #012970;
+}
+
+#footer .credits {
+  padding-top: 5px;
+  font-size: 13px;
+}
+
+
 
 
 .product-image-box {

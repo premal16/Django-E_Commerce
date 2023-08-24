@@ -382,3 +382,28 @@ def product_list(request):
 
     context = {'products': products, 'categories': categories, 'selected_category': selected_category}
     return render(request, 'product_list.html', context)
+
+
+
+def session_try(request):
+    num_visits = request.session.get('num_visits', 0)
+    request.session['num_visits'] = num_visits + 1
+    print(request)
+    context = {
+        'num_visits': num_visits,
+    }
+    return render(request, 'session-try.html', context=context)
+
+
+
+
+
+def user_home(request):
+    products = Product.objects.all()
+    orders = Order.objects.all()
+    categories = Category.objects.all()
+    print(categories)
+    user = CustomUser.objects.all()
+    context = {'products': products,'user':user,'orders':orders,'categories': categories}
+    return render(request,'shop/index.html',context)
+    
