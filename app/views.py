@@ -11,7 +11,7 @@ from django.shortcuts import render, get_object_or_404
 from .forms import ProductForm,ProductForm1
 from django.views.generic import ListView, DetailView
 from django.contrib import messages
-from django.http import Http404
+from django.http import Http404,JsonResponse
 
 @login_required(login_url='login/')
 def homePage(request):
@@ -400,10 +400,42 @@ def session_try(request):
 
 def user_home(request):
     products = Product.objects.all()
-    orders = Order.objects.all()
     categories = Category.objects.all()
-    print(categories)
-    user = CustomUser.objects.all()
-    context = {'products': products,'user':user,'orders':orders,'categories': categories}
-    return render(request,'shop/index.html',context)
+    return render(request, 'shop/index.html', {'products': products, 'categories': categories})
+
+
+# def user_product(request):
+#     products = Product.objects.all()
+#     categories = Category.objects.all()
+#     return render(request, 'shop/product.html', {'products': products, 'categories': categories})
+
+
+def user_product(request):
+    categories = Category.objects.all()
+    return render(request, 'shop/product.html', {'categories': categories})
+
+
+# def user_product(request):
+#     categories = Category.objects.all()
+
+#     # Create a dictionary to store products grouped by category
+#     products_by_category = {}
+
+#     # Populate the dictionary with categories as keys and corresponding products as values
+#     for category in categories:
+#         products_by_category[category] = Product.objects.filter(category=category)
+
+#     return render(request, 'shop/product.html', {'products_by_category': products_by_category, 'categories': categories})
+
+
+
+def user_product(request):
+    selected_category_id = request.GET.get('category')
     
+    products = Product.objects.all()
+    categories = Category.objects.all()
+    
+    if selected_category_id:
+        products = Product.objects.filter(category__id=selected_category_id)
+        
+    return render(request, 'shop/product.html', {'products': products, 'categories': categories})

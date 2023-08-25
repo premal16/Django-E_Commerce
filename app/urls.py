@@ -35,7 +35,7 @@ urlpatterns = [
 
 
     path('user-home/', views.user_home, name='user-home'),
-
+    path('user-product/', views.user_product, name='user-product'),
 
 ]
 
