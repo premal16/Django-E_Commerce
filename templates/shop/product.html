@@ -111,4 +111,25 @@
 </div>
 <!-- End Product Area -->
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.product-action a[data-target="#exampleModal"]').click(function() {
+        var productId = $(this).data('product-id');
+        $.ajax({
+            type: 'GET',
+            url: '/user-product/',  // Replace with the URL of your view that handles the Quick Shop functionality
+            data: { product_id: productId },
+            success: function(data) {
+                $('#quickViewContent').html(data);
+                $('#exampleModal').modal('show');
+            },
+            error: function() {
+                console.log('Error fetching product details.');
+            }
+        });
+    });
+});
+</script>
+
 {% endblock %}

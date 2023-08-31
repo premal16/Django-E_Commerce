@@ -55,7 +55,9 @@ def login(request):
                     auth_login(request, user)
                     return redirect('home')
                 else:
-                    return render(request, 'login.html', {'error_message': 'You are not Admin'})
+                    # return render(request, 'login.html', {'error_message': 'You are not Admin'})
+                    auth_login(request, user)
+                    return redirect('user-home')
             else:
                 return render(request, 'login.html', {'error_message': 'Invalid credentials'})
         return render(request, 'login.html')
@@ -398,44 +400,106 @@ def session_try(request):
 
 
 
-def user_home(request):
-    products = Product.objects.all()
-    categories = Category.objects.all()
-    return render(request, 'shop/index.html', {'products': products, 'categories': categories})
+# def user_home(request):
+#     selected_category_id = request.GET.get('category')
+
+#     products = Product.objects.all()
+#     categories = Category.objects.all()
+
+#     if selected_category_id:
+#         products = Product.objects.filter(category__id=selected_category_id)
+#     return render(request, 'shop/index.html', {'products': products, 'categories': categories})
+
+
+
+# def user_home(request):
+#     selected_category_id = request.GET.get('category')
+
+#     products = Product.objects.all()
+#     categories = Category.objects.all()
+
+#     if selected_category_id:
+#         products = Product.objects.filter(category__id=selected_category_id)
+
+#     product_id = request.GET.get('product_id')
+
+#     if product_id:
+#         product = Product.objects.get(id=product_id)
+#         context = {
+#             'products': products,
+#             'categories': categories,
+#             'product': product,
+#         }
+#     else:
+#         context = {
+#             'products': products,
+#             'categories': categories,
+#         }
+
+#     return render(request, 'shop/index.html', context)
 
 
 # def user_product(request):
+#     selected_category_id = request.GET.get('category')
+    
 #     products = Product.objects.all()
 #     categories = Category.objects.all()
+    
+#     if selected_category_id:
+#         products = Product.objects.filter(category__id=selected_category_id)
+        
 #     return render(request, 'shop/product.html', {'products': products, 'categories': categories})
 
 
-def user_product(request):
+
+
+
+
+
+def user_home(request):
+    selected_category_id = request.GET.get('category')
+    products = Product.objects.all()
     categories = Category.objects.all()
-    return render(request, 'shop/product.html', {'categories': categories})
 
+    if selected_category_id:
+        products = products.filter(category__id=selected_category_id)
 
-# def user_product(request):
-#     categories = Category.objects.all()
+    context = {
+        'products': products,
+        'categories': categories,
+    }
 
-#     # Create a dictionary to store products grouped by category
-#     products_by_category = {}
-
-#     # Populate the dictionary with categories as keys and corresponding products as values
-#     for category in categories:
-#         products_by_category[category] = Product.objects.filter(category=category)
-
-#     return render(request, 'shop/product.html', {'products_by_category': products_by_category, 'categories': categories})
-
-
+    return render(request, 'shop/index.html', context)
 
 def user_product(request):
     selected_category_id = request.GET.get('category')
-    
     products = Product.objects.all()
     categories = Category.objects.all()
-    
+
     if selected_category_id:
-        products = Product.objects.filter(category__id=selected_category_id)
-        
-    return render(request, 'shop/product.html', {'products': products, 'categories': categories})
+        products = products.filter(category__id=selected_category_id)
+
+    context = {
+        'products': products,
+        'categories': categories,
+    }
+
+    return render(request, 'shop/product.html', context)
+
+
+
+def quick_view(request, product_id):
+    try:
+        product = get_object_or_404(Product, pk=product_id)
+        product_data = {
+            'product_image_url': product.product_image.url,
+            'product_name': product.label,  # Use the label field as the name
+            'product_price': product.price,
+            'product_description': product.description,
+            # You might need to adjust the following fields based on your model structure
+            'product_size': '',  # Add the appropriate field from your model
+            'product_color': '',  # Add the appropriate field from your model
+        }
+        return JsonResponse(product_data)
+    except Product.DoesNotExist:
+        return JsonResponse({'error': 'Product not found'}, status=404)

@@ -36,6 +36,9 @@ urlpatterns = [
 
     path('user-home/', views.user_home, name='user-home'),
     path('user-product/', views.user_product, name='user-product'),
+    path('quick-view/<int:product_id>/', views.quick_view, name='quick-view'),
 
+    # path('quick-view/<int:product_id>/', views.quick_view, name='quick_view'),
+    # path('quick_view/<int:product_id>/', views.get_product_details, name='quick_view'),
 ]
 
