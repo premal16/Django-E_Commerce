@@ -2159,3 +2159,88 @@
 	<script src="{% static 'eshop/js/active.js' %}"></script>
 </body>
 </html>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.product-action a[data-target="#exampleModal"]').click(function() {
+        var productId = $(this).data('product-id');
+        console.log('Clicked Product ID:', productId); // Log the clicked product ID for debugging
+        var productData = $('.product-data[data-product-id="' + productId + '"]');
+        console.log('Product Data:', productData); // Log the product data for debugging
+
+        if (productData.length > 0) {
+            // Product data was found, you can proceed to populate the modal
+            var htmlContent = `
+                <div class="row no-gutters">
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                        <!-- Product Slider -->
+                        <div class="product-gallery">
+                            <div class="quickview-slider-active">
+                                <div class="single-slider">
+                                    <img src="${productData.find('.product-image-url').text()}" alt="#">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Product slider -->
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                        <div class="quickview-content">
+                            <h2>${productData.find('.product-name').text()}</h2>
+                            <h3>$${productData.find('.product-price').text()}</h3>
+                            <div class="quickview-peragraph">${productData.find('.product-description').text()}</div>
+							
+							<!-- Rest of the content -->
+							
+							<div class="quantity">
+								<!-- Input Order -->
+								<div class="input-group">
+									<div class="button minus">
+										<button type="button" class="btn btn-primary btn-number" disabled="disabled" data-type="minus" data-field="quant[1]">
+											<i class="ti-minus"></i>
+										</button>
+									</div>
+									<input type="text" name="quant[1]" class="input-number"  data-min="1" data-max="1000" value="1">
+									<div class="button plus">
+										<button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="quant[1]">
+											<i class="ti-plus"></i>
+										</button>
+									</div>
+								</div>
+								<!--/ End Input Order -->
+							</div>
+							<div class="add-to-cart">
+								<button class="btn btn-primary add-to-cart-button"
+										data-product-id="${productId}"
+										data-quantity="1">
+									Add to Cart
+								</button>
+								<a href="#" class="btn min"><i class="ti-heart"></i></a>
+								<a href="#" class="btn min"><i class="fa fa-compress"></i></a>
+							</div>
+							
+                            <div class="default-social">
+								<h4 class="share-now">Share:</h4>
+                                <ul>
+                                    <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                                    <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+                                    <li><a class="youtube" href="#"><i class="fa fa-pinterest-p"></i></a></li>
+                                    <li><a class="dribbble" href="#"><i class="fa fa-google-plus"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            $('#quickViewContent').html(htmlContent);
+            $('#exampleModal').modal('show');
+        } else {
+            // Product data was not found, you can handle this case as needed
+            console.log('Product data not found for productId:', productId);
+        }
+    });
+});
+</script>

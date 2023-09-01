@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth import get_user_model
-from .models import CustomUser,UserProfile,Product,Order,Category
+from .models import CustomUser,UserProfile,Product,Order,Category,CartItem
 from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import logout
@@ -503,3 +503,29 @@ def quick_view(request, product_id):
         return JsonResponse(product_data)
     except Product.DoesNotExist:
         return JsonResponse({'error': 'Product not found'}, status=404)
+    
+
+
+
+def add_to_cart(request):
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        print('Received product_id:', product_id)
+        quantity = int(request.POST.get('quantity', 1))
+
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Product not found'})
+
+        # Check if the user already has this product in their cart
+        cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+
+        if not created:
+            # If the item already exists in the cart, update the quantity
+            cart_item.quantity += quantity
+            cart_item.save()
+
+        return JsonResponse({'success': True, 'message': 'Product added to cart'})
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request method'})

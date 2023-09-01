@@ -101,3 +101,13 @@ class OrderItem(models.Model):
     
     def total_price(self):
         return self.quantity * self.price
+    
+
+class CartItem(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)  # Assuming you have a Product model
+    quantity = models.PositiveIntegerField(default=1)
+    # Add more fields as needed, e.g., price, date_added, etc.
+
+    def subtotal(self):
+        return self.product.price * self.quantity
