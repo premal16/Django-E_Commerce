@@ -45,11 +45,7 @@
                                 <p class="product-name"><a href="#">{{ cart_item.product.label }}</a></p>
                                 <p class="product-des">{{ cart_item.product.description }}</p>
                             </td>
-                            <td class="price" data-title="Price">
-                                <span class="product-price">${{ cart_item.product.price }}</span>
-                            </td>
-                            
-
+                            <td class="price" data-title="Price"><span>${{ cart_item.product.price }}</span></td>
                             <td class="qty" data-title="Qty">
                                 <!-- Input Order -->
                                 <div class="input-group">
@@ -118,7 +114,7 @@
                     </div>
                 </div>
                 <!--/ End Total Amount -->
-            </div>
+            </div>  
         </div>
     </div>
 </div>
@@ -171,26 +167,7 @@
 	<!-- End Shop Newsletter -->
 	
 	<!-- Start Shop Newsletter  -->
-	<section class="shop-newsletter section">
-		<div class="container">
-			<div class="inner-top">
-				<div class="row">
-					<div class="col-lg-8 offset-lg-2 col-12">
-						<!-- Start Newsletter Inner -->
-						<div class="inner">
-							<h4>Newsletter</h4>
-							<p> Subscribe to our newsletter and get <span>10%</span> off your first purchase</p>
-							<form action="mail/mail.php" method="get" target="_blank" class="newsletter-inner">
-								<input name="EMAIL" placeholder="Your email address" required="" type="email">
-								<button class="btn">Subscribe</button>
-							</form>
-						</div>
-						<!-- End Newsletter Inner -->
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+    
 	<!-- End Shop Newsletter -->
 	
 	
@@ -315,81 +292,90 @@
 
 <!-- Cart Update Script -->
 <script>
-// cart.js
+  // cart.js
 $(document).ready(function () {
     // Prevent multiple event bindings
     $(document).off('click', '.shopping-cart .button.plus');
     $(document).off('click', '.shopping-cart .button.minus');
-// Plus button click handler
-$(document).on('click', '.shopping-cart .button.plus', function () {
-    var $input = $(this).parent().parent().find('input.input-number');
-    var newVal = parseInt($input.val()) ;
-    $input.val(newVal);
-    updateSubtotal($(this).closest('tr'), newVal);
-});
 
-// Minus button click handler
-$(document).on('click', '.shopping-cart .button.minus', function () {
-    var $input = $(this).parent().parent().find('input.input-number');
-    var newVal = parseInt($input.val());
-    if (newVal >= parseInt($input.attr('data-min'))) {
+    // Plus button click handler
+    $(document).on('click', '.shopping-cart .button.plus', function () {
+        var $input = $(this).parent().parent().find('input.input-number');
+        var newVal = parseInt($input.val());
         $input.val(newVal);
-        updateSubtotal($(this).closest('tr'), newVal);
-    }
-});
+        updateSubtotal($(this).parent().parent(), newVal);
+    });
 
-function updateSubtotal($row, newQuantity) {
-    var quantityInput = $row.find('input.cart-quantity-input');
-    var price = parseFloat($row.find('.product-price').text().replace('$', ''));
-    var total = newQuantity * price; // Store as a number, not a string
-    console.log("total", typeof total, total); // Should be a number
-    $row.find('.total-amount span').text('$' + total.toFixed(2)); // Convert to a string when displaying
+    // Minus button click handler
+    $(document).on('click', '.shopping-cart .button.minus', function () {
+        var $input = $(this).parent().parent().find('input.input-number');
+        var newVal = parseInt($input.val());
+        if (newVal >= parseInt($input.attr('data-min'))) {
+            $input.val(newVal);
+            updateSubtotal($(this).parent().parent(), newVal);
+        }
+    });
 
-    $.ajax({
-        url: '/update_cart_item/' + quantityInput.data('cart-item-id') + '/',
-        type: 'POST',
-        data: {
-            csrfmiddlewaretoken: window.CSRF_TOKEN,
-            new_quantity: newQuantity
-        },
-        success: function (data) {
-            if (data.success) {
-                // Update cart totals
-                updateCartTotals();
-            } else {
-                alert('Error: ' + data.message);
+    // Add event listener for changes in quantity input value
+    $(document).on('change', '.cart-quantity-input', function () {
+        var newQuantity = parseInt($(this).val());
+        updateSubtotal($(this).closest('tr'), newQuantity);
+    });
+
+    function updateSubtotal($row, newQuantity) {
+        var quantityInput = $row.find('input.cart-quantity-input');
+        var cartItemId = quantityInput.attr('data-cart-item-id');
+        var price = parseFloat($row.find('.price span').text().replace('$', ''));
+        var total = (newQuantity * price).toFixed(2);
+        $row.find('.total-amount span').text('$' + total);
+
+        $.ajax({
+            url: '/update_cart_item/' + cartItemId + '/',
+            type: 'POST',
+            data: {
+                csrfmiddlewaretoken: window.CSRF_TOKEN,
+                new_quantity: newQuantity
+            },
+            success: function (data) {
+                if (data.success) {
+                    $row.find('.total-amount span').text('$' + total);
+
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            },
+            error: function () {
+                alert('Error: Something went wrong');
             }
-        },
-        error: function () {
-            alert('Error: Something went wrong');
-        }
-    });
-}
+        });
+    }
+    function updateCartTotals() {
+        var cartSubtotal = 0;
+        $('.total-amount span').each(function () {
+            var subtotalText = $(this).text().replace('$', '');
+            var subtotalValue = parseFloat(subtotalText);
+            if (!isNaN(subtotalValue)) {
+                cartSubtotal += subtotalValue;
+            }
+        });
+        $('.cart-subtotal').text('$' + cartSubtotal.toFixed(2));
 
-function updateCartTotals() {
-    var cartSubtotal = 0;
-    $('.total-amount span').each(function () {
-        var text = $(this).text().replace('$', ''); // Remove the dollar sign
-        var subtotal = parseFloat(text);
-        console.log("subtotal",subtotal)
-        if (!isNaN(subtotal)) {
-            cartSubtotal += subtotal;
-        }
+        // Calculate and update cart total (you can add shipping cost logic here)
+        var cartTotal = cartSubtotal; // Example: Cart total includes only subtotal
+        $('.cart-total').text('$' + cartTotal.toFixed(2));
 
-    });
-    $('.cart-subtotal').text('$' + cartSubtotal.toFixed(2));
+        // Update the displayed cart total on the page
+        $('#cart-total').text(cartTotal.toFixed(2));
+    }
 
-    var cartTotal = cartSubtotal; 
-    console.log("subtotal", typeof cartSubtotal, cartSubtotal); // Should be a number
+    // Initial call to update cart totals
+    updateCartTotals();
     
-    $('.cart-total').text('$' + cartTotal.toFixed(2));
-}
-
-// Initial call to update cart totals
-updateCartTotals();
 });
+
+
+
     </script>
     
-
-        
+      
 {% endblock %}
