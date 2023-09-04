@@ -111,3 +111,7 @@ class CartItem(models.Model):
 
     def subtotal(self):
         return self.product.price * self.quantity
+    
+    def remove(self):
+        # Method to remove the cart item
+        self.delete()

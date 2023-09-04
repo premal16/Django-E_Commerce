@@ -529,3 +529,27 @@ def add_to_cart(request):
         return JsonResponse({'success': True, 'message': 'Product added to cart'})
     else:
         return JsonResponse({'success': False, 'message': 'Invalid request method'})
+    
+
+
+def cart(request):
+    cart_subtotal = 0 
+    cart_items = CartItem.objects.filter(user=request.user)
+    print('items:',cart_items)
+    print(request.user)
+    for cart_item in cart_items:
+        print(cart_item.id)
+        cart_subtotal += cart_item.subtotal()
+    cart_total = cart_subtotal
+    context = {
+        'cart_items': cart_items,
+        'cart_subtotal': cart_subtotal,
+        'cart_total': cart_total,
+    }
+    return render(request, 'shop/cart.html',context)
+
+
+def remove_cart_item(request, cart_item_id):
+    cart_item = get_object_or_404(CartItem, id=cart_item_id, user=request.user)
+    cart_item.remove()  
+    return redirect('cart')
