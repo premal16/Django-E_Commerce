@@ -553,3 +553,22 @@ def remove_cart_item(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id, user=request.user)
     cart_item.remove()  
     return redirect('cart')
+
+
+
+
+def update_cart_item(request, cart_item_id):
+    if request.method == 'POST':
+        new_quantity = int(request.POST.get('new_quantity'))
+        print("new",new_quantity)
+        try:
+            cart_item = CartItem.objects.get(id=cart_item_id)
+            if new_quantity > 0:
+                cart_item.quantity = new_quantity
+                cart_item.save()
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'message': 'Quantity must be greater than zero'})
+        except CartItem.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Cart item not found'})
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
