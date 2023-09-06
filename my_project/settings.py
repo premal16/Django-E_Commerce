@@ -11,17 +11,25 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENV = ['.env', '.env.dev', '.env.local']
+env_file_found = False
+for env_file in ENV:
+    if os.path.isfile(Path.joinpath(BASE_DIR, env_file)):
+        env_file_found = True
+        load_dotenv(Path.joinpath(BASE_DIR, env_file))
+        break
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-tv8o)8$4ozxp^k)og8kancy%+8h=2_a-53sm1fnz^&t!p-8a=k'
-
+load_dotenv(Path.joinpath(BASE_DIR))
+SECRET_KEY = os.environ.get('SECRET_KEY')
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -70,6 +78,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'my_project.wsgi.application'
+
+
 
 
 # Database

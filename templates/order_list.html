@@ -8,7 +8,7 @@
                 <th>User</th>
                 <th>Status</th>
                 <th>Total Amount</th>
-                <th>Timestamp</th>
+                <th>Date</th>
                 <th>Order Status</th>
                 <!-- <th>count</th> -->
             </tr>
@@ -20,7 +20,7 @@
                     <td>{{ order.user }}</td>
                     <td>{{ order.status }}</td>
                     <td>{{ order.total_amount }}</td>
-                    <td>{{ order.timestamp }}</td>
+                    <td>{{ order.date }}</td>
                     <td>
                         <form class="d-flex align-items-center" method="post" action="{% url 'admin-order-change-status' order.pk %}">
                             {% csrf_token %}

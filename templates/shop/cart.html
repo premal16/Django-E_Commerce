@@ -69,7 +69,7 @@
                                 <!--/ End Input Order -->
                             </td>
                             
-                            <td class="total-amount" data-title="Total"><span>${{ cart_item.subtotal }}</span></td>
+                            <td class="new-total-amount" data-title="Total"><span>${{ cart_item.subtotal }}</span></td>
                             <td class="action" data-title="Remove">
                                 <a href="{% url 'remove_cart_item' cart_item.id %}">
                                     <i class="ti-trash remove-icon"></i>
@@ -106,17 +106,18 @@
                                 <ul>
                                     <li>Cart Subtotal<span class="cart-subtotal">${{ cart_subtotal }}</span></li>
                                     <li>Shipping<span>Free</span></li>
-                                    <li>You Save<span>$20.00</span></li>
-                                    <li class="last">You Pay<span class="cart-total">${{ cart_total }}</span></li>
+                                      
+                                    <li>You Pay<span class="cart-total">${{ cart_total }}</span></li>
                                 </ul>
                                 <div class="button5">
-                                    <a href="#" class="btn">Checkout</a>
+                                    <a href="{% url 'checkout' %}" class="btn">Checkout</a>
                                     <a href="#" class="btn">Continue shopping</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                
                 <!--/ End Total Amount -->
             </div>
         </div>
@@ -125,72 +126,8 @@
 <!--/ End Shopping Cart -->
 
     
-    	<!-- Start Shop Services Area  -->
-	<section class="shop-services section">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-3 col-md-6 col-12">
-					<!-- Start Single Service -->
-					<div class="single-service">
-						<i class="ti-rocket"></i>
-						<h4>Free shiping</h4>
-						<p>Orders over $100</p>
-					</div>
-					<!-- End Single Service -->
-				</div>
-				<div class="col-lg-3 col-md-6 col-12">
-					<!-- Start Single Service -->
-					<div class="single-service">
-						<i class="ti-reload"></i>
-						<h4>Free Return</h4>
-						<p>Within 30 days returns</p>
-					</div>
-					<!-- End Single Service -->
-				</div>
-				<div class="col-lg-3 col-md-6 col-12">
-					<!-- Start Single Service -->
-					<div class="single-service">
-						<i class="ti-lock"></i>
-						<h4>Sucure Payment</h4>
-						<p>100% secure payment</p>
-					</div>
-					<!-- End Single Service -->
-				</div>
-				<div class="col-lg-3 col-md-6 col-12">
-					<!-- Start Single Service -->
-					<div class="single-service">
-						<i class="ti-tag"></i>
-						<h4>Best Peice</h4>
-						<p>Guaranteed price</p>
-					</div>
-					<!-- End Single Service -->
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- End Shop Newsletter -->
-	
 	<!-- Start Shop Newsletter  -->
-	<section class="shop-newsletter section">
-		<div class="container">
-			<div class="inner-top">
-				<div class="row">
-					<div class="col-lg-8 offset-lg-2 col-12">
-						<!-- Start Newsletter Inner -->
-						<div class="inner">
-							<h4>Newsletter</h4>
-							<p> Subscribe to our newsletter and get <span>10%</span> off your first purchase</p>
-							<form action="mail/mail.php" method="get" target="_blank" class="newsletter-inner">
-								<input name="EMAIL" placeholder="Your email address" required="" type="email">
-								<button class="btn">Subscribe</button>
-							</form>
-						</div>
-						<!-- End Newsletter Inner -->
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+
 	<!-- End Shop Newsletter -->
 	
 	
@@ -315,47 +252,186 @@
 
 <!-- Cart Update Script -->
 <script>
-// cart.js
-$(document).ready(function () {
-    // Prevent multiple event bindings
-    $(document).off('click', '.shopping-cart .button.plus');
-    $(document).off('click', '.shopping-cart .button.minus');
-// Plus button click handler
-$(document).on('click', '.shopping-cart .button.plus', function () {
-    var $input = $(this).parent().parent().find('input.input-number');
-    var newVal = parseInt($input.val()) ;
-    $input.val(newVal);
-    updateSubtotal($(this).closest('tr'), newVal);
-});
+    // $(document).ready(function () {
+    //     // Prevent multiple event bindings
+    //     $(document).off('click', '.shopping-cart .button.plus');
+    //     $(document).off('click', '.shopping-cart .button.minus');
 
-// Minus button click handler
-$(document).on('click', '.shopping-cart .button.minus', function () {
-    var $input = $(this).parent().parent().find('input.input-number');
-    var newVal = parseInt($input.val());
-    if (newVal >= parseInt($input.attr('data-min'))) {
+    //     // Plus button click handler
+    //     $(document).on('click', '.shopping-cart .button.plus', function () {
+    //         var $input = $(this).parent().parent().find('input.input-number');
+    //         var newVal = parseInt($input.val());
+    //         $input.val(newVal);
+    //         updateSubtotal($(this).closest('tr'), newVal);
+    //     });
+
+    //     // Minus button click handler
+    //     $(document).on('click', '.shopping-cart .button.minus', function () {
+    //         var $input = $(this).parent().parent().find('input.input-number');
+    //         var newVal = parseInt($input.val());
+    //         if (newVal >= parseInt($input.attr('data-min'))) {
+    //             $input.val(newVal);
+    //             updateSubtotal($(this).closest('tr'), newVal);
+    //         }
+    //     });
+
+    //     function updateSubtotal($row, newQuantity) {
+    //         var $quantityInput = $row.find('input.cart-quantity-input');
+    //         var quantity = parseInt($quantityInput.val());
+    //         var price = parseFloat($row.find('.product-price').text().replace('$', ''));
+    //         var total = quantity * price;
+    //         $row.find('.total-amount span').text('$' + total.toFixed(2));
+
+    //         $.ajax({
+    //             url: '/update_cart_item/' + $quantityInput.data('cart-item-id') + '/',
+    //             type: 'POST',
+    //             data: {
+    //                 csrfmiddlewaretoken: window.CSRF_TOKEN,
+    //                 new_quantity: newQuantity
+    //             },
+    //             success: function (data) {
+    //                 if (data.success) {
+    //                     // Update cart totals
+    //                     updateCartTotal();
+    //                 } else {
+    //                     alert('Error: ' + data.message);
+    //                 }
+    //             },
+    //             error: function () {
+    //                 alert('Error: Something went wrong');
+    //             }
+    //         });
+    //     }
+    //     function updateCartTotal() {
+    //         var cartTotal = 0;
+    //         $('.total-amount span').each(function () {
+    //             var subtotal = parseFloat($(this).text().replace('$', '')) || 0; // Handle NaN by defaulting to 0
+    //             console.log("subbbbbbbb",subtotal,typeof(subtotal))
+    //             cartTotal += subtotal;
+    //         });
+    //         $('.cart-total').text('$' + cartTotal.toFixed(2));
+    //     }
+
+    //     // Initial update of the cart total
+    //     updateCartTotal()
+    // });
+
+
+
+
+
+
+
+
+    // $(document).ready(function () {
+    //     // Plus button click handler
+    //     $('.button.plus').click(function () {
+    //         var $input = $(this).closest('tr').find('.cart-quantity-input');
+    //         var newVal = parseInt($input.val()) + 1;
+    //         $input.val(newVal);
+    //         updateSubtotal($(this).closest('tr'));
+    //     });
+
+    //     // Minus button click handler
+    //     $('.button.minus').click(function () {
+    //         var $input = $(this).closest('tr').find('.cart-quantity-input');
+    //         var newVal = parseInt($input.val()) - 1;
+    //         if (newVal >= parseInt($input.attr('data-min'))) {
+    //             $input.val(newVal);
+    //             updateSubtotal($(this).closest('tr'));
+    //         }
+    //     });
+
+    //     function updateSubtotal($row) {
+    //         var $quantityInput = $row.find('.cart-quantity-input');
+    //         var quantity = parseInt($quantityInput.val()) || 0;
+    //         var price = parseFloat($row.find('.product-price').text().replace('$', '')) || 0;
+    //         var total = quantity * price;
+    //         $row.find('.total-amount span').text('$' + total.toFixed(2));
+
+    //         // AJAX call to update the server
+    //         $.ajax({
+    //             url: '/update_cart_item/' + $quantityInput.data('cart-item-id') + '/',
+    //             type: 'POST',
+    //             data: {
+    //                 csrfmiddlewaretoken: window.CSRF_TOKEN,
+    //                 new_quantity: quantity
+    //             },
+    //             success: function (data) {
+    //                 if (data.success) {
+    //                     // Server update successful
+    //                     updateCartTotal();
+    //                 } else {
+    //                     alert('Error: ' + data.message);
+    //                 }
+    //             },
+    //             error: function () {
+    //                 alert('Error: Something went wrong');
+    //             }
+    //         });
+    //     }
+
+    //     function updateCartTotal() {
+    //         var cartTotal = 0;
+    //         $('.total-amount span').each(function () {
+    //             var subtotal = parseFloat($(this).text().replace('$', '')) || 0;
+    //             console.log("subbbbbbbb",subtotal,typeof(subtotal))
+
+    //             cartTotal += subtotal;
+    //         });
+    //         $('.cart-total').text('$' + cartTotal.toFixed(2));
+    //     }
+
+    //     // Initial update of the cart total
+    //     updateCartTotal();
+    // });
+
+
+
+
+
+    <!-- Cart Update Script -->
+
+    $(document).ready(function () {
+    // Plus button click handler
+    $('.button.plus').click(function () {
+        var $input = $(this).closest('tr').find('.cart-quantity-input');
+        var newVal = parseInt($input.val());
         $input.val(newVal);
-        updateSubtotal($(this).closest('tr'), newVal);
-    }
-});
+        updateSubtotal($(this).closest('tr'));
+    });
 
-function updateSubtotal($row, newQuantity) {
-    var quantityInput = $row.find('input.cart-quantity-input');
-    var price = parseFloat($row.find('.product-price').text().replace('$', ''));
-    var total = newQuantity * price; // Store as a number, not a string
-    console.log("total", typeof total, total); // Should be a number
-    $row.find('.total-amount span').text('$' + total.toFixed(2)); // Convert to a string when displaying
+    // Minus button click handler
+    $('.button.minus').click(function () {
+        var $input = $(this).closest('tr').find('.cart-quantity-input');
+        var newVal = parseInt($input.val());
+        if (newVal >= parseInt($input.attr('data-min'))) {
+            $input.val(newVal);
+            updateSubtotal($(this).closest('tr'));
+        }
+    });
 
+    function updateSubtotal($row) {
+    var $quantityInput = $row.find('.cart-quantity-input');
+    var quantity = parseInt($quantityInput.val()) || 0;
+    var price = parseFloat($row.find('.product-price').text().replace('$', '')) || 0;
+    console.log('Quantity:', quantity);
+    console.log('Price:', price);
+    var total = quantity * price;
+    $row.find('.new-total-amount').text('$' + total.toFixed(2));
+
+    // AJAX call to update the server
     $.ajax({
-        url: '/update_cart_item/' + quantityInput.data('cart-item-id') + '/',
+        url: '/update_cart_item/' + $quantityInput.data('cart-item-id') + '/',
         type: 'POST',
         data: {
             csrfmiddlewaretoken: window.CSRF_TOKEN,
-            new_quantity: newQuantity
+            new_quantity: quantity
         },
         success: function (data) {
             if (data.success) {
-                // Update cart totals
-                updateCartTotals();
+                // Server update successful
+                updateCartTotal(); // This line calls the updateCartTotal function
             } else {
                 alert('Error: ' + data.message);
             }
@@ -366,29 +442,27 @@ function updateSubtotal($row, newQuantity) {
     });
 }
 
-function updateCartTotals() {
-    var cartSubtotal = 0;
-    $('.total-amount span').each(function () {
-        var text = $(this).text().replace('$', ''); // Remove the dollar sign
-        var subtotal = parseFloat(text);
-        console.log("subtotal",subtotal)
-        if (!isNaN(subtotal)) {
-            cartSubtotal += subtotal;
-        }
-
+function updateCartTotal() {
+    var cartTotal = 0;
+    $('.new-total-amount').each(function () {
+        var total = parseFloat($(this).text().replace('$', '')) || 0;
+           console.log("totasll:-",total) 
+        cartTotal += total;
+        console.log("cart..", cartTotal)
     });
-    $('.cart-subtotal').text('$' + cartSubtotal.toFixed(2));
-
-    var cartTotal = cartSubtotal; 
-    console.log("subtotal", typeof cartSubtotal, cartSubtotal); // Should be a number
-    
     $('.cart-total').text('$' + cartTotal.toFixed(2));
 }
 
-// Initial call to update cart totals
-updateCartTotals();
-});
-    </script>
+// Initial update of the cart total
+updateCartTotal();
+
+    });
+
+
+
+
+
+</script>
     
 
         

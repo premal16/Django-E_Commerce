@@ -541,10 +541,11 @@ def cart(request):
         print(cart_item.id)
         cart_subtotal += cart_item.subtotal()
     cart_total = cart_subtotal
+    print("cart_total",cart_total)
     context = {
         'cart_items': cart_items,
         'cart_subtotal': cart_subtotal,
-        'cart_total1': cart_total,
+        'cart_total': cart_total,
     }
     return render(request, 'shop/cart.html',context)
 
@@ -572,3 +573,80 @@ def update_cart_item(request, cart_item_id):
         except CartItem.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Cart item not found'})
     return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+
+
+def checkout(request):
+    cart_subtotal = 0 
+    cart_items = CartItem.objects.filter(user=request.user)
+    for cart_item in cart_items:
+        cart_subtotal += cart_item.subtotal()
+    cart_total = cart_subtotal
+    context = {
+        'cart_items': cart_items,
+        'cart_subtotal': cart_subtotal,
+        'cart_total': cart_total,
+    }
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        mobile_number = request.POST.get('mobile_number')
+        address = request.POST.get('address')
+
+        order = Order.objects.create(
+            user=request.user,
+            status='processing',  # You can set the default status here
+            total_amount = cart_total,      # Set the initial total amount (you may update it later)
+            address=address,
+            mobile_number=mobile_number
+        )
+
+        # Handle payment processing and update order details if needed
+
+
+
+        # CartItem.objects.filter(user=request.user).delete()           #clear the cart after successfull order
+
+
+
+        # Redirect to a confirmation page or a thank you page
+        return redirect('checkout_confirmation')
+    return render(request, 'shop/checkout.html',context)
+
+# def checkout(request):
+#     if request.method == 'POST':
+#         # Retrieve form data
+#         name = request.POST.get('name')
+#         email = request.POST.get('email')
+#         mobile_number = request.POST.get('mobile_number')
+#         address = request.POST.get('address')
+
+#         # Create a new order and associate it with the logged-in user
+#         order = Order.objects.create(
+#             user=request.user,
+#             status='processing',  # You can set the default status here
+#             total_amount=0.0,      # Set the initial total amount (you may update it later)
+#             address=address,
+#             mobile_number=mobile_number
+#         )
+
+#         # Handle payment processing and update order details if needed
+
+#         # Redirect to a confirmation page or a thank you page
+#         return redirect('checkout_confirmation')
+
+#     # Render the checkout form
+#     return render(request, 'checkout.html')
+
+
+
+def checkout_confirmation(request):
+    # Example: Retrieve the latest order associated with the logged-in user
+    latest_order = Order.objects.filter(user=request.user).latest('date')
+
+    context = {
+        'latest_order': latest_order,  # Pass the latest order to the template
+    }
+
+    return render(request, 'shop/checkout_confirmation.html', context)

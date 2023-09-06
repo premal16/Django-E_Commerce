@@ -80,9 +80,15 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50,default=False)
+    email = models.EmailField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='processing')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True)
+
+    # added two fields
+    address = models.CharField(max_length=200, default='', blank=True)
+    mobile_number = models.CharField(max_length=12, default='', blank=True)
 
 
     def __str__(self):
