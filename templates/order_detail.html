@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
-
   
 <div class="custom-order-detail">
     <h2 class="mb-3">Order Detail - {{ order }}</h2>
-    {% for item in order.orderitem_set.all %}
     <div class="card">
         <div class="card-body">
             <p class="mb-2"><strong>Status:</strong> {{ order.status }}</p>
-            <p class="mb-2"><strong>Total Amount:</strong> {{ item.total_price }}</p>
+            <p class="mb-2"><strong>Total Amount:</strong> {{ order.total_amount }}</p>
             <p class="mb-2"><strong>Date:</strong> {{ order.date }}</p>
             <h3 class="mt-4">Order Items</h3>
             <table class="table table-bordered">
@@ -22,6 +20,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for item in order.orderitem_set.all %}
                         <tr>
                             <td>{{ item.product.label }}</td>
                             <td>{{ item.product.category }}</td>

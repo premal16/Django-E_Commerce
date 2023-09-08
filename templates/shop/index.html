@@ -122,7 +122,7 @@
 															<div class="product-action-2">
 																<!-- <a title="Add to cart" href="#">Add to cart</a> -->
 																<a href="#" class="add-to-cart-link" data-product-id="{{ product.id }}" data-quantity="1">
-																	Add to Cart-1
+																	Add to Cart
 																</a>
 															</div>
 														</div>
@@ -164,7 +164,7 @@
 																	<div class="product-action-2">
 																		<!-- <a title="Add to cart" href="#">Add to cart</a> -->
 																		<a href="#" class="add-to-cart-link" data-product-id="{{ product.id }}" data-quantity="1">
-																			Add to Cart-2
+																			Add to Cart
 																		</a>
 																	</div>
 																</div>
@@ -229,7 +229,7 @@
             <div class="product-action-2">
                 <!-- <a title="Add to cart" href="#">Add to cart</a> -->
 				<a href="#" class="add-to-cart-link" data-product-id="{{ product.id }}" data-quantity="1">
-					Add to Cart-3
+					Add to Cart
 				</a>
 				
             </div>
@@ -253,9 +253,9 @@
 </div>
 
 
-{% for product in products %}
+<!-- {% for product in products %}
     <a href="#" data-toggle="modal" data-target="#exampleModal" data-product-id="{{ product.id }}">Quick View {{ product.name }}</a>
-{% endfor %}
+{% endfor %} -->
 
 <!-- Modal -->
 <!-- End Most Popular Area -->
@@ -353,7 +353,7 @@
 							<div class="add-to-cart">
 								<!-- <a href="#" class="btn">Add to cart</a> -->
 								<a href="#" class="add-to-cart-link" data-product-id="{{ product.id }}" data-quantity="1">
-									Add to Cart-4
+									Add to Cart-0
 								</a>
 								<a href="#" class="btn min"><i class="ti-heart"></i></a>
 								<a href="#" class="btn min"><i class="fa fa-compress"></i></a>
@@ -453,7 +453,9 @@ $(document).on('click', '.add-to-cart-link', function(e) {
 										<!--/ End Input Order -->
 									</div>
 									<div class="add-to-cart">
-										<a href="#" class="add-to-cart-link" data-product-id="${productId}" data-quantity="1">Add to Cart-0</a>
+										<a href="#" class="add-to-cart-link" data-product-id="${productId}" data-quantity="1">
+											<button class="btn">Add to Cart</button>
+										</a>
 										
 										<a href="#" class="btn min"><i class="ti-heart"></i></a>
 										<a href="#" class="btn min"><i class="fa fa-compress"></i></a>

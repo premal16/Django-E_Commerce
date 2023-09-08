@@ -1,0 +1,65 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <form id="payment-form">
+                <div id="card-element">
+                    <!-- A Stripe Element will be inserted here. -->
+                </div>
+                <!-- Used to display form errors. -->
+                <div id="card-errors" role="alert"></div>
+                <button id="submit-button" class="btn">Pay Now</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Add your custom styles for the card element here */
+    #card-element {
+        background-color: #fff;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+
+    /* Add more custom styles as needed */
+
+</style>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe('{{ stripe_public_key }}');
+    var elements = stripe.elements();
+    var cardElement = elements.create('card');
+
+    cardElement.mount('#card-element');
+
+    var form = document.getElementById('payment-form');
+    var submitButton = document.getElementById('submit-button');
+    var cardErrors = document.getElementById('card-errors');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        submitButton.disabled = true;
+        stripe.confirmCardPayment('{{ client_secret }}', {
+            payment_method: {
+                card: cardElement
+            }
+        }).then(function(result) {
+            if (result.error) {
+                // Display error message to your user
+                cardErrors.textContent = result.error.message;
+                submitButton.disabled = false;
+            } else {
+                // Payment succeeded, redirect or show a success message
+                if (result.paymentIntent.status === 'succeeded') {
+                    // Redirect to a success page or display a success message
+                    console.log('Payment succeeded!');
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

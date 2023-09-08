@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth import get_user_model
-from .models import CustomUser,UserProfile,Product,Order,Category,CartItem
+from .models import CustomUser,UserProfile,Product,Order,Category,CartItem,OrderItem
 from django.contrib.auth import authenticate
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth import logout
@@ -12,6 +12,10 @@ from .forms import ProductForm,ProductForm1
 from django.views.generic import ListView, DetailView
 from django.contrib import messages
 from django.http import Http404,JsonResponse
+
+import stripe
+from django.conf import settings
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @login_required(login_url='login/')
 def homePage(request):
@@ -577,76 +581,86 @@ def update_cart_item(request, cart_item_id):
 
 
 def checkout(request):
-    cart_subtotal = 0 
     cart_items = CartItem.objects.filter(user=request.user)
+    if cart_items:
+        cart_subtotal = 0
+        for cart_item in cart_items:
+            cart_subtotal += cart_item.subtotal()
+        cart_total = cart_subtotal
+        context = {
+            'cart_items': cart_items,
+            'cart_subtotal': cart_subtotal,
+            'cart_total': cart_total,
+        }
+
+        if request.method == 'POST':
+            print("innnnnnnn")
+            name = request.POST.get('name')
+            email = request.POST.get('email')
+            mobile_number = request.POST.get('mobile_number')
+            address = request.POST.get('address')
+            cart_total = cart_subtotal
+
+            order = Order.objects.create(
+                user=request.user,
+                name=name,
+                email=email,
+                status='processing',
+                total_amount=cart_total,
+                address=address,
+                mobile_number=mobile_number
+            )
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    quantity=cart_item.quantity,
+                    price=cart_item.product.price  # Set the price here or retrieve it from elsewhere
+                )
+
+            # Redirect to the create_checkout_session view
+            return redirect('checkout_session')
+
+        return render(request, 'shop/checkout.html', context)  # Render the checkout page
+    else:
+        return redirect('cart')
+
+def create_checkout_session(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    line_items = []
     for cart_item in cart_items:
-        cart_subtotal += cart_item.subtotal()
-    cart_total = cart_subtotal
-    context = {
-        'cart_items': cart_items,
-        'cart_subtotal': cart_subtotal,
-        'cart_total': cart_total,
-    }
+        product = cart_item.product
+        unit_amount_cents = int(cart_item.subtotal() * 100)  # Convert to cents
 
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        mobile_number = request.POST.get('mobile_number')
-        address = request.POST.get('address')
+        line_items.append({
+            'price_data': {
+                'currency': 'inr',  # Adjust currency as needed
+                'product_data': {
+                    'name': product.label,  # Product name
+                },
+                'unit_amount': unit_amount_cents,
+            },
+            'quantity': cart_item.quantity,
+        })
 
-        order = Order.objects.create(
-            user=request.user,
-            status='processing',  # You can set the default status here
-            total_amount = cart_total,      # Set the initial total amount (you may update it later)
-            address=address,
-            mobile_number=mobile_number
-        )
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=line_items,
+        mode='payment',
+        success_url='http://localhost:8000/success',
+        cancel_url='http://localhost:8000/cancel',
+    )
 
-        # Handle payment processing and update order details if needed
+    # Clear the cart after a successful order
+    CartItem.objects.filter(user=request.user).delete()
 
-
-
-        # CartItem.objects.filter(user=request.user).delete()           #clear the cart after successfull order
-
-
-
-        # Redirect to a confirmation page or a thank you page
-        return redirect('checkout_confirmation')
-    return render(request, 'shop/checkout.html',context)
-
-# def checkout(request):
-#     if request.method == 'POST':
-#         # Retrieve form data
-#         name = request.POST.get('name')
-#         email = request.POST.get('email')
-#         mobile_number = request.POST.get('mobile_number')
-#         address = request.POST.get('address')
-
-#         # Create a new order and associate it with the logged-in user
-#         order = Order.objects.create(
-#             user=request.user,
-#             status='processing',  # You can set the default status here
-#             total_amount=0.0,      # Set the initial total amount (you may update it later)
-#             address=address,
-#             mobile_number=mobile_number
-#         )
-
-#         # Handle payment processing and update order details if needed
-
-#         # Redirect to a confirmation page or a thank you page
-#         return redirect('checkout_confirmation')
-
-#     # Render the checkout form
-#     return render(request, 'checkout.html')
+    return redirect(session.url, code=303)
 
 
 
-def checkout_confirmation(request):
-    # Example: Retrieve the latest order associated with the logged-in user
-    latest_order = Order.objects.filter(user=request.user).latest('date')
+def success(request):
+    return render(request,'shop/success.html')
 
-    context = {
-        'latest_order': latest_order,  # Pass the latest order to the template
-    }
 
-    return render(request, 'shop/checkout_confirmation.html', context)
+def cancel(request):
+    return render(request,'shop/cancel.html')
