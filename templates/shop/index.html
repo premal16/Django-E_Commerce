@@ -5,7 +5,7 @@
 	<section class="hero-slider">
 		<!-- Single Slider -->
 		<div class="single-slider">
-            <img src="{% static 'eshop/images/pin_12.jpg' %}" alt="">
+            <img src="{% static 'eshop/images/shop4.jpg' %}" alt="">
 			<div class="container">
 				<div class="row no-gutters">
 					<div class="col-lg-9 offset-lg-3 col-12">
@@ -30,50 +30,6 @@
 	</section>
 	<!--/ End Slider Area -->
 	
-	<!-- Start Small Banner  -->
-	<section class="small-banner section">
-		<div class="container-fluid">
-			<div class="row">
-				<!-- Single Banner  -->
-				<div class="col-lg-4 col-md-6 col-12">
-					<div class="single-banner">
-						<img src="https://via.placeholder.com/600x370" alt="#">
-						<div class="content">
-							<p>Man's Collectons</p>
-							<h3>Summer travel <br> collection</h3>
-							<a href="#">Discover Now</a>
-						</div>
-					</div>
-				</div>
-				<!-- /End Single Banner  -->
-				<!-- Single Banner  -->
-				<div class="col-lg-4 col-md-6 col-12">
-					<div class="single-banner">
-						<img src="https://via.placeholder.com/600x370" alt="#">
-						<div class="content">
-							<p>Bag Collectons</p>
-							<h3>Awesome Bag <br> 2020</h3>
-							<a href="#">Shop Now</a>
-						</div>
-					</div>
-				</div>
-				<!-- /End Single Banner  -->
-				<!-- Single Banner  -->
-				<div class="col-lg-4 col-12">
-					<div class="single-banner tab-height">
-						<img src="https://via.placeholder.com/600x370" alt="#">
-						<div class="content">
-							<p>Flash Sale</p>
-							<h3>Mid Season <br> Up to <span>40%</span> Off</h3>
-							<a href="#">Discover Now</a>
-						</div>
-					</div>
-				</div>
-				<!-- /End Single Banner  -->
-			</div>
-		</div>
-	</section>
-	<!-- End Small Banner -->
 	
 	<div class="product-area section">
 		<div class="container">
@@ -117,7 +73,7 @@
 																<!-- <a data-toggle="modal" data-target="#exampleModal" title="Quick View" href="#"><i class="ti-eye"></i><span>Quick Shop</span></a> -->
 																<a href="#" data-toggle="modal" data-target="#exampleModal" data-product-id="{{ product.id }}"><i class="ti-eye"></i><span>Quick Shop</span></a>
 																<a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a>
-																<a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
+																<!-- <a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a> -->
 															</div>
 															<div class="product-action-2">
 																<!-- <a title="Add to cart" href="#">Add to cart</a> -->
@@ -159,7 +115,7 @@
 																		<!-- <a data-toggle="modal" data-target="#exampleModal" title="Quick View" href="#"><i class="ti-eye"></i><span>Quick Shop</span></a> -->
 																		<a href="#" data-toggle="modal" data-target="#exampleModal" data-product-id="{{ product.id }}">Quick View {{ product.name }}</a>
 																		<a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a>
-																		<a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
+																		<!-- <a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a> -->
 																	</div>
 																	<div class="product-action-2">
 																		<!-- <a title="Add to cart" href="#">Add to cart</a> -->
@@ -224,7 +180,7 @@
                 <a href="#" data-toggle="modal" data-target="#exampleModal" data-product-id="{{ product.id }}"><i class="ti-eye"></i><span>Quick Shop</span>
                 </a>
                 <a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a>
-                <a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
+                <!-- <a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a> -->
             </div>
             <div class="product-action-2">
                 <!-- <a title="Add to cart" href="#">Add to cart</a> -->
@@ -311,28 +267,7 @@
 							<div class="quickview-peragraph">
 								{{ product.description }}
 							</div>
-							<div class="size">
-								<div class="row">
-									<div class="col-lg-6 col-12">
-										<h5 class="title">Size</h5>
-										<select name="size">
-											<option selected="selected">{{ product.size }}</option>
-											<option>m</option>
-											<option>l</option>
-											<option>xl</option>
-										</select>
-									</div>
-									<div class="col-lg-6 col-12">	
-										<h5 class="title">Color</h5>
-										<select name="color">
-											<option selected="selected">{{ product.color }}</option>
-											<option>purple</option>
-											<option>black</option>
-											<option>pink</option>
-										</select>
-									</div>
-								</div>
-							</div>
+						
 							<div class="quantity">
 								<!-- Input Order -->
 								<div class="input-group">
@@ -424,7 +359,7 @@ $(document).on('click', '.add-to-cart-link', function(e) {
                         <div class="product-gallery">
                             <div class="quickview-slider-active">
                                 <div class="single-slider">
-                                    <img src="${productData.find('.product-image-url').text()}" alt="#">
+                                    <img src="${productData.find('.product-image-url').text()}" alt="#" class="product-image">
                                 </div>
                             </div>
                         </div>

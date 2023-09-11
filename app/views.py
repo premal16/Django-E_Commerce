@@ -11,7 +11,7 @@ from django.shortcuts import render, get_object_or_404
 from .forms import ProductForm,ProductForm1
 from django.views.generic import ListView, DetailView
 from django.contrib import messages
-from django.http import Http404,JsonResponse
+from django.http import Http404,JsonResponse,HttpResponseBadRequest
 
 import stripe
 from django.conf import settings
@@ -626,6 +626,10 @@ def checkout(request):
         return redirect('cart')
 
 def create_checkout_session(request):
+    try:
+        latest_order = Order.objects.filter(user=request.user).latest('date')
+    except Order.DoesNotExist:
+        return HttpResponseBadRequest("No orders found for the current user")
     cart_items = CartItem.objects.filter(user=request.user)
     line_items = []
     for cart_item in cart_items:
@@ -647,7 +651,7 @@ def create_checkout_session(request):
         payment_method_types=['card'],
         line_items=line_items,
         mode='payment',
-        success_url='http://localhost:8000/success',
+        success_url=f'http://localhost:8000/success/?order_id={latest_order.id}', 
         cancel_url='http://localhost:8000/cancel',
     )
 
@@ -657,9 +661,22 @@ def create_checkout_session(request):
     return redirect(session.url, code=303)
 
 
+# @login_required
 
 def success(request):
-    return render(request,'shop/success.html')
+    order_id = request.GET.get('order_id')
+
+    if not order_id:
+        return HttpResponseBadRequest("Missing order_id parameter")
+    try:
+        latest_order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return HttpResponseBadRequest("Order not found")
+
+    context = {
+        'latest_order': latest_order,
+    }
+    return render(request, 'shop/checkout_confirmation.html', context)
 
 
 def cancel(request):

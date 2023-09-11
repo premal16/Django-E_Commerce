@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Checkout Confirmation</title>
-</head>
-<body>
+{% extends 'shop/base.html' %}
+{% block content %}
+{% load static %}
+
+
     <h1>Thank You for Your Order!</h1>
     
     <!-- Display confirmation details, order summary, or other relevant information -->
@@ -17,12 +16,12 @@
     <p>{{ latest_order.address }}</p>
     
     <h2>Contact Information</h2>
-    <p>Name: {{ request.user.name}}</p>
-    <p>Email: {{ request.user.email }}</p>
+    <p>Name: {{ latest_order.name}}</p>
+    <p>Email: {{ latest_order.email }}</p>
     <p>Phone Number: {{ latest_order.mobile_number }}</p>
 
     <p>Your order has been confirmed. You will receive an email confirmation shortly.</p>
 
     <!-- Add any additional content or links as needed -->
-</body>
-</html>
+
+{% endblock %}

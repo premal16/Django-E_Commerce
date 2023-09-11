@@ -4954,6 +4954,21 @@ Version:1.0
     z-index: 9999;
 }
 
+
+/* Set the dimensions for the container div */
+.product-gallery {
+    width: 500px; /* Adjust as needed */
+    height: 500px; /* Adjust as needed */
+    overflow: hidden; /* Hide any overflow if the image is larger */
+}
+
+/* Set the dimensions for the image to fit within the container */
+.product-image {
+    width: 100%; /* Make the image take the full width of the container */
+    height: auto; /* Maintain the aspect ratio */
+    display: block; /* Remove any extra spacing caused by inline elements */
+}
+
 /*=============================
 	End Footer CSS
 ===============================*/

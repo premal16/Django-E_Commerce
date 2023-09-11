@@ -34,30 +34,34 @@
                                     {% for product in products %}
                                         <div class="col-xl-3 col-lg-4 col-md-4 col-12">
                                             <div class="single-product">
-												<div class="product-img">
-													<a href="product-details.html">
-														<img class="default-img" src="{{ product.product_image.url }}" alt="#">
-														<img class="hover-img" src="{{ product.product_image.url }}" alt="#">
-													</a>
-													<div class="button-head">
-														<div class="product-action">
-															<a data-toggle="modal" data-target="#exampleModal" title="Quick View" href="#"><i class="ti-eye"></i><span>Quick Shop</span></a>
-															<a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a>
-															<a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
-														</div>
-														<div class="product-action-2">
-															<a title="Add to cart" href="#">Add to cart</a>
-														</div>
-													</div>
-												</div>
-												<div class="product-content">
-													<h3><a href="product-details.html">{{ product.label }}</a></h3>
-													<div class="product-price">
-														<span>{{ product.price }}</span>
-													</div>
-												</div>
-											</div>
-											
+                                                <div class="product-img">
+                                                    <a href="product-details.html">
+                                                        <img class="default-img" src="{{ product.product_image.url }}" alt="#">
+                                                        <img class="hover-img" src="{{ product.product_image.url }}" alt="#">
+                                                    </a>
+                                                    <div class="button-head">
+                                                        <div class="product-action">
+                                                            <!-- <a data-toggle="modal" data-target="#exampleModal" title="Quick View" href="#"><i class="ti-eye"></i><span>Quick Shop</span></a> -->
+                                                            <a href="#" data-toggle="modal" data-target="#exampleModal" data-product-id="{{ product.id }}"><i class="ti-eye"></i><span>Quick Shop</span></a>
+                                                            <a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a>
+                                                            <a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
+                                                        </div>
+                                                        <div class="product-action-2">
+                                                            <!-- <a title="Add to cart" href="#">Add to cart</a> -->
+                                                            <a href="#" class="add-to-cart-link" data-product-id="{{ product.id }}" data-quantity="1">
+                                                                Add to Cart
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="product-content">
+                                                    <h3><a href="product-details.html">{{ product.label }}</a></h3>
+                                                    <div class="product-price">
+                                                        <span>{{ product.price }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -71,31 +75,36 @@
                                         {% for product in products %}
                                             {% if product.category == category %}
                                                 <div class="col-xl-3 col-lg-4 col-md-4 col-12">
-													<div class="single-product">
-														<div class="product-img">
-															<a href="product-details.html">
-																<img class="default-img" src="{{ product.product_image.url }}" alt="#">
-																<img class="hover-img" src="{{ product.product_image.url }}" alt="#">
-															</a>
-															<div class="button-head">
-																<div class="product-action">
-																	<a data-toggle="modal" data-target="#exampleModal" title="Quick View" href="#"><i class="ti-eye"></i><span>Quick Shop</span></a>
-																	<a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a>
-																	<a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
-																</div>
-																<div class="product-action-2">
-																	<a title="Add to cart" href="#">Add to cart</a>
-																</div>
-															</div>
-														</div>
-														<div class="product-content">
-															<h3><a href="product-details.html">{{ product.label }}</a></h3>
-															<div class="product-price">
-																<span>{{ product.price }}</span>
-															</div>
-														</div>
-													</div>
-													
+                                                    <div class="single-product">
+                                                        <div class="product-img">
+                                                            <a href="product-details.html">
+                                                                <img class="default-img" src="{{ product.product_image.url }}" alt="#">
+                                                                <img class="hover-img" src="{{ product.product_image.url }}" alt="#">
+                                                            </a>
+                                                            <div class="button-head">
+                                                                <div class="product-action">
+                                                                    <!-- <a data-toggle="modal" data-target="#exampleModal" title="Quick View" href="#"><i class="ti-eye"></i><span>Quick Shop</span></a> -->
+                                                                    <a href="#" data-toggle="modal" data-target="#exampleModal" data-product-id="{{ product.id }}"><i class="ti-eye"></i><span>Quick Shop</span></a>
+
+                                                                    <a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a>
+                                                                    <a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a>
+                                                                </div>
+                                                                <div class="product-action-2">
+                                                                    <!-- <a title="Add to cart" href="#">Add to cart</a> -->
+                                                                    <a href="#" class="add-to-cart-link" data-product-id="{{ product.id }}" data-quantity="1">
+                                                                        Add to Cart
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="product-content">
+                                                            <h3><a href="product-details.html">{{ product.label }}</a></h3>
+                                                            <div class="product-price">
+                                                                <span>{{ product.price }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
                                                 </div>
                                             {% endif %}
                                         {% endfor %}
@@ -111,25 +120,261 @@
 </div>
 <!-- End Product Area -->
 
+<!-- Start Midium Banner  -->
+
+<!-- End Midium Banner -->
+
+<!-- Start Most Popular -->
+
+
+
+<!-- {% for product in products %}
+<a href="#" data-toggle="modal" data-target="#exampleModal" data-product-id="{{ product.id }}">Quick View {{ product.name }}</a>
+{% endfor %} -->
+
+<!-- Modal -->
+<!-- End Most Popular Area -->
+
+<!-- Start Shop Newsletter  -->
+
+<!-- End Shop Newsletter -->
+<!-- Modal -->
+<!-- Modal -->
+<div id="popupMessage" class="popup-message" style="display: none;">
+Product added to cart!
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" id="quickViewContent">
+            <div class="row no-gutters">
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                    <!-- Product Slider -->
+                    <div class="product-gallery">
+                        <div class="quickview-slider-active">
+                            <div class="single-slider">
+                                <img src="{{ product.product_image.url }}" alt="#">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Product slider -->
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                    <div class="quickview-content">
+                        <h2>{{ product.name }}000</h2>
+                        <div class="quickview-ratting-review">
+                            <div class="quickview-ratting-wrap">
+                                <div class="quickview-ratting">
+                                    <i class="yellow fa fa-star"></i>
+                                    <i class="yellow fa fa-star"></i>
+                                    <i class="yellow fa fa-star"></i>
+                                    <i class="yellow fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                </div>
+                                <a href="#"> (1 customer review)</a>
+                            </div>
+                            <div class="quickview-stock">
+                                <span><i class="fa fa-check-circle-o"></i> in stock</span>
+                            </div>
+                        </div>
+                        <h3>{{ product.price }}512</h3>
+                        <div class="quickview-peragraph">
+                            {{ product.description }}
+                        </div>
+                        <div class="size">
+                            <div class="row">
+                                <div class="col-lg-6 col-12">
+                                    <h5 class="title">Size</h5>
+                                    <select name="size">
+                                        <option selected="selected">{{ product.size }}</option>
+                                        <option>m</option>
+                                        <option>l</option>
+                                        <option>xl</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-6 col-12">	
+                                    <h5 class="title">Color</h5>
+                                    <select name="color">
+                                        <option selected="selected">{{ product.color }}</option>
+                                        <option>purple</option>
+                                        <option>black</option>
+                                        <option>pink</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quantity">
+                            <!-- Input Order -->
+                            <div class="input-group">
+                                <div class="button minus">
+                                    <button type="button" class="btn btn-primary btn-number" disabled="disabled" data-type="minus" data-field="quant[1]">
+                                        <i class="ti-minus"></i>
+                                    </button>
+                                </div>
+                                <input type="text" name="quant[1]" class="input-number"  data-min="1" data-max="1000" value="1">
+                                <div class="button plus">
+                                    <button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="quant[1]">
+                                        <i class="ti-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!--/ End Input Order -->
+                        </div>
+                        <div class="add-to-cart">
+                            <!-- <a href="#" class="btn">Add to cart</a> -->
+                            <a href="#" class="add-to-cart-link" data-product-id="{{ product.id }}" data-quantity="1">
+                                Add to Cart-0
+                            </a>
+                            <a href="#" class="btn min"><i class="ti-heart"></i></a>
+                            <a href="#" class="btn min"><i class="fa fa-compress"></i></a>
+                        </div>
+                        <div class="default-social">
+                            <h4 class="share-now">Share:</h4>
+                            <ul>
+                                <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                                <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+                                <li><a class="youtube" href="#"><i class="fa fa-pinterest-p"></i></a></li>
+                                <li><a class="dribbble" href="#"><i class="fa fa-google-plus"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
+
 <script>
-$(document).ready(function() {
-    $('.product-action a[data-target="#exampleModal"]').click(function() {
-        var productId = $(this).data('product-id');
-        $.ajax({
-            type: 'GET',
-            url: '/user-product/',  // Replace with the URL of your view that handles the Quick Shop functionality
-            data: { product_id: productId },
-            success: function(data) {
-                $('#quickViewContent').html(data);
-                $('#exampleModal').modal('show');
-            },
-            error: function() {
-                console.log('Error fetching product details.');
+
+$(document).on('click', '.add-to-cart-link', function(e) {
+    e.preventDefault();
+    console.log('Button clicked');
+    var productId = $(this).data('product-id');
+    console.log(productId)
+    var quantity = $(this).data('quantity');
+    
+    // Get the CSRF token
+    var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+    
+    $.ajax({
+        type: 'POST',
+        url: '{% url "add_to_cart" %}',  // Replace with your actual URL
+        data: {
+            csrfmiddlewaretoken: window.CSRF_TOKEN,
+            'product_id': productId,
+            'quantity': quantity
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (data.success) {
+                $('#popupMessage').fadeIn(300).delay(2000).fadeOut(400); // Show for 2 seconds
+            } else {
+                alert('Error: ' + data.message);
             }
-        });
+        }
     });
 });
-</script>
 
+    $('.product-action a[data-target="#exampleModal"]').click(function() {
+        var productId = $(this).data('product-id');
+        console.log('Clicked Product ID:', productId); // Log the clicked product ID for debugging
+        var productData = $('.product-data[data-product-id="' + productId + '"]');
+        console.log('Product Data:', productData); // Log the product data for debugging
+
+        if (productData.length > 0) {
+            // Product data was found, you can proceed to populate the modal
+            var htmlContent = `
+            <div class="row no-gutters">
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                    <div class="product-gallery">
+                        <div class="quickview-slider-active">
+                            <div class="single-slider">
+                                <img src="${productData.find('.product-image-url').text()}" alt="#">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                    <div class="quickview-content">
+                        <h2>${productData.find('.product-name').text()}</h2>
+                        <h3>$${productData.find('.product-price').text()}</h3>
+                        <div class="quickview-peragraph">${productData.find('.product-description').text()}</div>
+                        <!-- Rest of the content -->
+                        <div class="quantity">
+                                    <!-- Input Order -->
+                                    <div class="input-group">
+                                        <div class="button minus">
+                                            <button type="button" class="btn btn-primary btn-number" disabled="disabled" data-type="minus" data-field="quant[1]">
+                                                <i class="ti-minus"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" name="quant[1]" class="input-number"  data-min="1" data-max="1000" value="1">
+                                        <div class="button plus">
+                                            <button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="quant[1]">
+                                                <i class="ti-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!--/ End Input Order -->
+                                </div>
+                                <div class="add-to-cart">
+                                    <a href="#" class="add-to-cart-link" data-product-id="${productId}" data-quantity="1">
+                                        <button class="btn">Add to Cart</button>
+                                    </a>
+                                    
+                                    <a href="#" class="btn min"><i class="ti-heart"></i></a>
+                                    <a href="#" class="btn min"><i class="fa fa-compress"></i></a>
+                                </div>
+                                <div class="default-social">
+                                    <h4 class="share-now">Share:</h4>
+                                    <ul>
+                                        <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                                        <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+                                        <li><a class="youtube" href="#"><i class="fa fa-pinterest-p"></i></a></li>
+                                        <li><a class="dribbble" href="#"><i class="fa fa-google-plus"></i></a></li>
+                                    </ul>
+                                </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        $('#quickViewContent').html(htmlContent);
+        $('#exampleModal').modal('show');
+    } else {
+        // Product data was not found, you can handle this case as needed
+        console.log('Product data not found for productId:', productId);
+    }
+});
+
+
+</script>
+<!-- JavaScript code -->
+<!-- Include this in your HTML template -->
+
+
+
+<!-- Preload Data -->
+<div class="preload-data" style="display: none;">
+{% for product in products %}
+<div class="product-data" data-product-id="{{ product.id }}">
+    <div class="product-name">{{ product.label }}</div>
+    <div class="product-image-url">{{ product.product_image.url }}</div>
+    <div class="product-price">{{ product.price }}</div>
+    <div class="product-description">{{ product.description }}</div>
+    <div class="product-size">{{ product.size }}</div>
+    <div class="product-color">{{ product.color }}</div>
+</div>
+{% endfor %}
+</div>
 {% endblock %}

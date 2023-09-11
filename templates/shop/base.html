@@ -2,6 +2,7 @@
 <html lang="zxx">
 <head>
 	{% load static %}
+	{% load custom_tags %}
 	<!-- Meta Tag -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -62,29 +63,7 @@
 	<!-- Header -->
 	<header class="header shop">
 		<!-- Topbar -->
-		<div class="topbar">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-4 col-md-12 col-12">
-						<!-- Top Left -->
-
-						<!--/ End Top Left -->
-					</div>
-					<div class="col-lg-8 col-md-12 col-12">
-						<!-- Top Right -->
-						<div class="right-content">
-							<ul class="list-main">
-								<li><i class="ti-location-pin"></i> Store location</li>
-								<li><i class="ti-alarm-clock"></i> <a href="#">Daily deal</a></li>
-								<li><i class="ti-user"></i> <a href="{% url 'profile' %}">My account</a></li>
-								<li><i class="ti-power-off"></i><a href="{% url 'login' %}">Login</a></li>
-							</ul>
-						</div>
-						<!-- End Top Right -->
-					</div>
-				</div>
-			</div>
-		</div>
+		
 		<!-- End Topbar -->
 		<div class="middle-inner">
 			<div class="container">
@@ -126,49 +105,48 @@
 							</div>
 						</div>
 					</div>
+
 					<div class="col-lg-2 col-md-3 col-12">
 						<div class="right-bar">
 							<!-- Search Form -->
+						
 							<div class="sinlge-bar">
 								<a href="#" class="single-icon"><i class="fa fa-heart-o" aria-hidden="true"></i></a>
-							</div>
-							<div class="sinlge-bar">
+							</div><div class="sinlge-bar">
 								<a href="{% url 'profile' %}" class="single-icon"><i class="fa fa-user-circle-o" aria-hidden="true"></i></a>
 							</div>
-							
 							<div class="sinlge-bar shopping">
-								<a href="#" class="single-icon"><i class="ti-bag"></i> <span class="total-count">2</span></a>
+								<a href="{% url 'user-home' %}" class="single-icon"><i class="ti-bag"></i> <span class="total-count">{% cart_item_count %}</span></a>
 								<!-- Shopping Item -->
-								
 								<div class="shopping-item">
 									<div class="dropdown-cart-header">
-										<span>2 Items</span>
-										<a href="#">View Cart</a>
+										<span>{% cart_item_count %} Items</span>
+										<a href="{% url 'cart' %}">View Cart</a>
 									</div>
+						
 									
 									<ul class="shopping-list">
+										{% for cart_item in request.user.cartitem_set.all %}
 										<li>
 											<a href="#" class="remove" title="Remove this item"><i class="fa fa-remove"></i></a>
-											<a class="cart-img" href="#"><img src="https://via.placeholder.com/70x70" alt="#"></a>
-											<h4><a href="#">Woman Ring</a></h4>
-											<p class="quantity">1x - <span class="amount">$99.00</span></p>
+											<a class="cart-img" href="#"><img src="{{ cart_item.product.product_image.url }}" alt="#"></a>
+											<h4><a href="#">{{ cart_item.product.label }}</a></h4>
+											<p class="quantity">1x - <span class="amount">${{ cart_item.product.price }}</span></p>
 										</li>
-										<li>
-											<a href="#" class="remove" title="Remove this item"><i class="fa fa-remove"></i></a>
-											<a class="cart-img" href="#"><img src="https://via.placeholder.com/70x70" alt="#"></a>
-											<h4><a href="#">Woman Necklace</a></h4>
-											<p class="quantity">1x - <span class="amount">$35.00</span></p>
-										</li>
+										{% endfor %}
+									
 									</ul>
 									<div class="bottom">
 										<div class="total">
 											<span>Total</span>
-											<span class="total-amount">$134.00</span>
+											<span class="total-amount">${% cart_total %}</span>
 										</div>
 										<a href="{% url 'checkout' %}" class="btn animate">Checkout</a>
 									</div>
 								</div>
 								<!--/ End Shopping Item -->
+							</div><div class="sinlge-bar">
+								<a href="#" class="single-icon"><i class="ti-power-off"></i><a href="{% url 'login' %}"></a>
 							</div>
 						</div>
 					</div>
@@ -182,12 +160,8 @@
 					<div class="row">
 						<div class="col-lg-3">
                             <div class="all-category">
-                                <h3 class="cat-heading"><i class="fas fa-bars"></i> CATEGORIES</h3>
-                                <ul class="main-category">
-                                    {% for category in categories %}
-                                        <li><a href="#">{{ category.name }}</a></li>
-                                    {% endfor %}
-                                </ul>
+							<h1>	&nbsp&nbsp&nbsp&nbsp<a href="index.html"><img src="{% static 'eshop/images/logo.png' %}" alt="logo"></a></h1>
+                            
                             </div>
 						</div>
 						<div class="col-lg-9 col-12">
@@ -202,13 +176,10 @@
 													<li><a href="#">Service</a></li>
 													<li><a href="#">Shop<i class="ti-angle-down"></i><span class="new">New</span></a>
 														<ul class="dropdown">
-															<li><a href="shop-grid.html">Shop Grid</a></li>
 															<li><a href="{% url 'cart' %}">Cart</a></li>
 															<li><a href="{% url 'checkout' %}">Checkout</a></li>
 														</ul>
 													</li>
-
-
 												</ul>
 										</div>
 									</div>
@@ -278,11 +249,6 @@
 		</div>
 	</section>
 	<!-- End Shop Services Area -->
-	
-	<!-- Start Shop Newsletter  -->
-
-	<!-- End Shop Newsletter -->
-
 
 	<!-- Start Footer Area -->
 	<footer class="footer">
