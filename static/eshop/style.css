@@ -762,6 +762,7 @@ Version:1.0
 	background: transparent;
 	position: relative;
 	background: #f7941d;
+	padding: 3%;
 }
 .header.shop .all-category h3{
 	padding: 20px 25px;
@@ -1757,7 +1758,7 @@ Version:1.0
   display: block;
   position: relative;
 }
-.single-product .product-img a img {
+.single-product .product-img img {
   width: 100%;
 }
 .single-product .product-img a img.hover-img {
@@ -4973,7 +4974,7 @@ Version:1.0
 
 /* Set the dimensions for the container div */
 .product-gallery {
-    width: 500px; /* Adjust as needed */
+    width: 550px; /* Adjust as needed */
     height: 500px; /* Adjust as needed */
     overflow: hidden; /* Hide any overflow if the image is larger */
 }
@@ -4985,6 +4986,13 @@ Version:1.0
     display: block; /* Remove any extra spacing caused by inline elements */
 }
 
+
+.custom-widget {
+	text-align: left;
+    margin: 0;
+    padding: 0px 30px;
+    margin-top: 30px;
+}
 /*=============================
 	End Footer CSS
 ===============================*/

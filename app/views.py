@@ -471,6 +471,7 @@ def user_home(request):
     context = {
         'products': products,
         'categories': categories,
+        'active_page': 'home'
     }
 
     return render(request, 'shop/index.html', context)
@@ -486,6 +487,7 @@ def user_product(request):
     context = {
         'products': products,
         'categories': categories,
+        'active_page': 'product'
     }
 
     return render(request, 'shop/product.html', context)
@@ -516,14 +518,16 @@ def add_to_cart(request):
         product_id = request.POST.get('product_id')
         print('Received product_id:', product_id)
         quantity = int(request.POST.get('quantity', 1))
+        print('quantity.....1',quantity)
 
         try:
             product = Product.objects.get(id=product_id)
+            print("product is",product)
         except Product.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Product not found'})
 
         # Check if the user already has this product in their cart
-        cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+        cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product,quantity=quantity)
 
         if not created:
             # If the item already exists in the cart, update the quantity
@@ -542,7 +546,6 @@ def cart(request):
     print('items:',cart_items)
     print(request.user)
     for cart_item in cart_items:
-        print(cart_item.id)
         cart_subtotal += cart_item.subtotal()
     cart_total = cart_subtotal
     print("cart_total",cart_total)
@@ -565,7 +568,6 @@ def remove_cart_item(request, cart_item_id):
 def update_cart_item(request, cart_item_id):
     if request.method == 'POST':
         new_quantity = int(request.POST.get('new_quantity'))
-        print("new",new_quantity)
         try:
             cart_item = CartItem.objects.get(id=cart_item_id)
             if new_quantity > 0:
@@ -617,9 +619,21 @@ def checkout(request):
                     quantity=cart_item.quantity,
                     price=cart_item.product.price  # Set the price here or retrieve it from elsewhere
                 )
+            payment_method = request.POST.get('payment') 
+            print("payment methiod is", payment_method)
 
+            if payment_method == 'cash':
+                print("in cash")
+                try:
+                    latest_order = Order.objects.filter(user=request.user).latest('date')
+                except Order.DoesNotExist:
+                    return HttpResponseBadRequest("No orders found for the current user")
+                CartItem.objects.filter(user=request.user).delete()
+
+                return redirect('success', order_id=latest_order.id)
+            else:
             # Redirect to the create_checkout_session view
-            return redirect('checkout_session')
+                return redirect('checkout_session')
 
         return render(request, 'shop/checkout.html', context)  # Render the checkout page
     else:
@@ -646,13 +660,14 @@ def create_checkout_session(request):
             },
             'quantity': cart_item.quantity,
         })
+    current_domain = request.META['HTTP_HOST']
 
     session = stripe.checkout.Session.create(
         payment_method_types=['card'],
         line_items=line_items,
         mode='payment',
-        success_url=f'http://localhost:8000/success/?order_id={latest_order.id}', 
-        cancel_url='http://localhost:8000/cancel',
+        success_url=f'http://{current_domain}/success/{latest_order.id}',
+        cancel_url=f'http://{current_domain}/cancel',
     )
 
     # Clear the cart after a successful order
@@ -663,11 +678,11 @@ def create_checkout_session(request):
 
 # @login_required
 
-def success(request):
-    order_id = request.GET.get('order_id')
-
-    if not order_id:
-        return HttpResponseBadRequest("Missing order_id parameter")
+def success(request,order_id):
+    # order_id = request.GET.get('order_id')
+    # print("order_id..",order_id)
+    # if not order_id:
+    #     return HttpResponseBadRequest("Missing order_id parameter")
     try:
         latest_order = Order.objects.get(id=order_id)
     except Order.DoesNotExist:
@@ -681,3 +696,6 @@ def success(request):
 
 def cancel(request):
     return render(request,'shop/cancel.html')
+
+
+

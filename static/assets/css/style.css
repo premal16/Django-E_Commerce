@@ -29,7 +29,7 @@ body {
 }
 
 a {
-  color: #4154f1;
+  color: #F7941D;
   text-decoration: none;
 }
 
@@ -86,7 +86,7 @@ h6 {
   right: 15px;
   bottom: 15px;
   z-index: 99999;
-  background: #4154f1;
+  background: #F7941D;
   width: 40px;
   height: 40px;
   border-radius: 4px;
@@ -303,7 +303,7 @@ h6 {
 
 .accordion-flush .accordion-button:not(.collapsed) {
   box-shadow: none;
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .accordion-flush .accordion-body {
@@ -351,13 +351,13 @@ h6 {
 
 .nav-tabs-bordered .nav-link:hover,
 .nav-tabs-bordered .nav-link:focus {
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .nav-tabs-bordered .nav-link.active {
   background-color: #fff;
-  color: #4154f1;
-  border-bottom: 2px solid #4154f1;
+  color: #F7941D;
+  border-bottom: 2px solid #F7941D;
 }
 
 /*--------------------------------------------------------------
@@ -374,14 +374,14 @@ h6 {
 }
 
 .logo img {
-  max-height: 26px;
-  margin-right: 6px;
+  max-height: 35px;
+  /* margin-right: 6px; */
 }
 
 .logo span {
   font-size: 26px;
   font-weight: 700;
-  color: #012970;
+  color: #9c640f;
   font-family: "Nunito", sans-serif;
 }
 
@@ -693,7 +693,7 @@ h6 {
   align-items: center;
   font-size: 15px;
   font-weight: 600;
-  color: #4154f1;
+  color: #F7941D;
   transition: 0.3;
   background: #f6f9ff;
   padding: 10px 15px;
@@ -703,7 +703,7 @@ h6 {
 .sidebar-nav .nav-link i {
   font-size: 16px;
   margin-right: 10px;
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .sidebar-nav .nav-link.collapsed {
@@ -716,12 +716,12 @@ h6 {
 }
 
 .sidebar-nav .nav-link:hover {
-  color: #4154f1;
+  color: #F7941D;
   background: #f6f9ff;
 }
 
 .sidebar-nav .nav-link:hover i {
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .sidebar-nav .nav-link .bi-chevron-down {
@@ -759,11 +759,11 @@ h6 {
 
 .sidebar-nav .nav-content a:hover,
 .sidebar-nav .nav-content a.active {
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .sidebar-nav .nav-content a.active i {
-  background-color: #4154f1;
+  background-color: #F7941D;
 }
 
 /*--------------------------------------------------------------
@@ -786,7 +786,7 @@ h6 {
 
 .dashboard .filter .icon:hover,
 .dashboard .filter .icon:focus {
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .dashboard .filter .dropdown-header {
@@ -830,7 +830,7 @@ h6 {
 }
 
 .dashboard .sales-card .card-icon {
-  color: #4154f1;
+  color: #F7941D;
   background: #f6f6fe;
 }
 
@@ -915,7 +915,7 @@ h6 {
 }
 
 .dashboard .news h4 a:hover {
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .dashboard .news p {
@@ -1063,7 +1063,7 @@ h6 {
 .faq .basic h6 {
   font-size: 18px;
   font-weight: 600;
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .faq .basic p {
@@ -1080,7 +1080,7 @@ h6 {
 .contact .info-box i {
   font-size: 38px;
   line-height: 0;
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .contact .info-box h3 {
@@ -1147,7 +1147,7 @@ h6 {
 
 .contact .php-email-form input:focus,
 .contact .php-email-form textarea:focus {
-  border-color: #4154f1;
+  border-color: #F7941D;
 }
 
 .contact .php-email-form input {
@@ -1159,7 +1159,7 @@ h6 {
 }
 
 .contact .php-email-form button[type=submit] {
-  background: #4154f1;
+  background: #F7941D;
   border: 0;
   padding: 10px 30px;
   color: #fff;
@@ -1191,7 +1191,7 @@ h6 {
 .error-404 h1 {
   font-size: 180px;
   font-weight: 700;
-  color: #4154f1;
+  color: #F7941D;
   margin-bottom: 0;
   line-height: 150px;
 }
