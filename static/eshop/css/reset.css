@@ -1743,6 +1743,13 @@ object {
 	line-height: 45px;
 }
 
+.quickview-content .add-to-cart .close {
+	padding: 0 20px;
+	font-size: 17px;
+	position: relative;
+	top: 1px;
+	line-height: 45px;
+}
 .default-social ul li {
   display: inline-block;
   margin-right: 5px;

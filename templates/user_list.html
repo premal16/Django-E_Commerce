@@ -46,7 +46,7 @@
                   <th scope="col">Country</th>
                   <th scope="col">Mobile Number</th>
                   <th scope="col">Address</th>
-                  <th scope="col">pk</th>
+                  <th scope="col">Update</th>
                   <th scope="col">Delete</th>
 
                 </tr>
@@ -57,11 +57,13 @@
                 <tr>
                   <th scope="row">{{ forloop.counter }}</th>
                   <td><a href="{% url 'user-profile' user.id %}" class="text-primary">{{ user.username }}</a></td>
-                  <td>{{ user.email }}</td>
-                  <td>{{ user.userprofile.country }}</td>
-                  <td>{{ user.userprofile.mobile_number }}</td>
-                  <td>{{ user.userprofile.address }}</td>
-                  <td>{{ user.pk }}</td>
+                  <td>{% if user.email %}{{ user.email }}{% else %}-{% endif %}</td>
+                  <td>{% if user.userprofile.country %}{{ user.userprofile.country }}{% else %}-{% endif %}</td>
+                  <td>{% if user.userprofile.mobile_number %}{{ user.userprofile.mobile_number }}{% else %}-{% endif %}</td>
+                  <td>{% if user.userprofile.address %}{{ user.userprofile.address }}{% else %}-{% endif %}</td>
+                  <td>
+                    <a href="{% url 'user-profile' user.id %}" class="btn btn-success btn-sm" role="button">Update</a>
+                  </td>
                   <td>
                     <form method="post" action="{% url 'custom-user-delete' user.id %} ">
                       {% csrf_token %}

@@ -21,3 +21,9 @@ def cart_total(context):
                 cart_subtotal += cart_item.subtotal()
         cart_total = cart_subtotal        
         return cart_total
+    
+
+
+@register.filter
+def starts_with(value, arg):
+    return value.startswith(arg)

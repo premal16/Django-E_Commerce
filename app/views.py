@@ -276,7 +276,7 @@ def product_update(request, product_id):
 
     print(product)
     if request.method == 'POST':
-        form = ProductForm1(request.POST, instance=product)
+        form = ProductForm1(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
             print("11111111111")
@@ -601,28 +601,35 @@ def checkout(request):
             email = request.POST.get('email')
             mobile_number = request.POST.get('mobile_number')
             address = request.POST.get('address')
+            payment_method = request.POST.get('payment') 
+            print("payment methiod is", payment_method)
+
+
             cart_total = cart_subtotal
 
             order = Order.objects.create(
                 user=request.user,
                 name=name,
                 email=email,
-                status='processing',
+                status='Processing',
                 total_amount=cart_total,
                 address=address,
+                payment_method = payment_method,
                 mobile_number=mobile_number
             )
+            for cart_item in cart_items:
+                order.product.add(cart_item.product)
+                
             for cart_item in cart_items:
                 OrderItem.objects.create(
                     order=order,
                     product=cart_item.product,
                     quantity=cart_item.quantity,
-                    price=cart_item.product.price  # Set the price here or retrieve it from elsewhere
+                    price=cart_item.product.price  
                 )
             payment_method = request.POST.get('payment') 
-            print("payment methiod is", payment_method)
 
-            if payment_method == 'cash':
+            if payment_method == 'cod':
                 print("in cash")
                 try:
                     latest_order = Order.objects.filter(user=request.user).latest('date')

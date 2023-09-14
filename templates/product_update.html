@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 {% block content %}
 <div class="container">
@@ -9,6 +10,7 @@
                         <h2 class="mb-4">Update Product</h2>
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
+                            
                             {{ form.as_p }}
                             <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
                             <a href="{% url 'product-list' %}" class="btn btn-secondary mt-3">Back</a>
@@ -20,3 +22,4 @@
     </section>
 </div>
 {% endblock %}
+

@@ -6,7 +6,7 @@
     <div class="card">
         <div class="card-body">
             <p class="mb-2"><strong>Status:</strong> {{ order.status }}</p>
-            <p class="mb-2"><strong>Total Amount:</strong> {{ order.total_amount }}</p>
+            <p class="mb-2"><strong>Total Amount:</strong> ₹ {{ order.total_amount }}</p>
             <p class="mb-2"><strong>Date:</strong> {{ order.date }}</p>
             <h3 class="mt-4">Order Items</h3>
             <table class="table table-bordered">
@@ -25,8 +25,8 @@
                             <td>{{ item.product.label }}</td>
                             <td>{{ item.product.category }}</td>
                             <td>{{ item.quantity }}</td>
-                            <td>{{ item.price }}</td>
-                            <td>{{ item.total_price }}</td>
+                            <td>₹ {{ item.price }}</td>
+                            <td>₹ {{ item.total_price }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

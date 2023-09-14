@@ -4993,6 +4993,18 @@ Version:1.0
     padding: 0px 30px;
     margin-top: 30px;
 }
+
+
+.right5 .button5 .btn {
+	text-align: center;
+	border-radius: 0;
+	width: 100%;
+	margin-top: 10px;
+	height: 46px;
+	line-height: 18px;
+	font-size: 13px;
+	color: #fff;
+}
 /*=============================
 	End Footer CSS
 ===============================*/

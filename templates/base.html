@@ -2,6 +2,8 @@
 <html lang="en">
   <head>
     {% load static %}
+    {% load custom_tags %}
+
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
   
@@ -49,12 +51,7 @@
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
-    <!-- <div class="search-bar">
-      <form class="search-form d-flex align-items-center" method="POST" action="#">
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
-      </form>
-    </div> -->
+    
     <!-- End Search Bar -->
 
     <nav class="header-nav ms-auto">
@@ -126,7 +123,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link " href="{% url 'home' %}">
+        <a class="nav-link {% if request.path == '/' %}{% else %} collapsed{% endif %}" href="{% url 'home' %}">
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
         </a>
@@ -134,65 +131,34 @@
 
       <li class="nav-heading">Pages</li>
 
-      <!-- <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'profile' %}">
-          <i class="bi bi-person"></i>
-          <span>Profile</span>
-        </a>
-      </li>End Profile Page Nav -->
-<!-- 
+  
       <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-faq.html">
-          <i class="bi bi-question-circle"></i>
-          <span>F.A.Q</span>
+        <a class="nav-link{% if request.path|starts_with:'/products/' %}{% else %} collapsed{% endif %}" href="{% url 'product-list' %}">
+            <i class="bi bi-card-list"></i>
+            <span>Product </span>
         </a>
-      </li>End F.A.Q Page Nav -->
-
-
-      <!-- <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'register' %}">
-          <i class="bi bi-card-list"></i>
-          <span>Register</span>
-        </a>
-      </li>End Register Page Nav -->
+    </li>
+    
       <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'product-list' %}">
-          <i class="bi bi-card-list"></i>
-          <span>Product</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'user' %}"> 
+        <a class="nav-link{% if request.path|starts_with:'/users/' %}{% else %} collapsed{% endif %}" href="{% url 'user' %}"> 
           <i class="bi bi-card-list"></i>
           <span>Customers</span>
         </a>
       </li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'add_product' %}">
+        <a class="nav-link {% if request.path|starts_with:'/add_product/' %}{% else %} collapsed{% endif %}" href="{% url 'add_product' %}">
           <i class="bi bi-card-list"></i>
           <span>Add Product</span>
         </a>
       </li><!-- End Register Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="{% url 'admin-order-list' %}">
+        <a class="nav-link {% if request.path|starts_with:'/orders/' %}{% else %} collapsed{% endif %}" href="{% url 'admin-order-list' %}">
           <i class="bi bi-card-list"></i>
           <span>Order List</span>
         </a>
       </li><!-- End Register Page Nav -->
-
-        <!-- <li class="nav-item">
-          <a class="nav-link collapsed" href="{% url 'contact' %}">
-            <i class="bi bi-envelope"></i>
-            <span>Contact</span>
-          </a>
-        </li> -->
-
-
-
-
-
     </ul>
 
   </aside><!-- End Sidebar-->
@@ -209,10 +175,7 @@
       &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
     </div>
     <div class="credits">
-      <!-- All the links in the footer should remain intact. -->
-      <!-- You can delete the links only if you purchased the pro version. -->
-      <!-- Licensing information: https://bootstrapmade.com/license/ -->
-      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      
       Designed by <a href="https://www.moontechnolabs.com/">MoonTechnolabs</a>
     </div>
   </footer><!-- End Footer -->

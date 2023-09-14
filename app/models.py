@@ -80,6 +80,7 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product = models.ManyToManyField('Product')
     name = models.CharField(max_length=50,default=False)
     email = models.EmailField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='processing')
@@ -87,6 +88,7 @@ class Order(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     # added two fields
+    payment_method = models.CharField(max_length=20,default=False)
     address = models.CharField(max_length=200, default='', blank=True)
     mobile_number = models.CharField(max_length=12, default='', blank=True)
 

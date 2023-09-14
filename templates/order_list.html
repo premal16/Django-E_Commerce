@@ -25,14 +25,15 @@
                         <form class="d-flex align-items-center" method="post" action="{% url 'admin-order-change-status' order.pk %}">
                             {% csrf_token %}
                             <select name="new_status" class="form-control me-2">
-                                <option value="Pending">Pending</option>
-                                <option value="Processing">Processing</option>
-                                <option value="Shipped">Shipped</option>
-                                <option value="Delivered">Delivered</option>
+                                <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="Processing" {% if order.status == 'Processing' or 'processing' %}selected{% endif %}>Processing</option>
+                                <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
                             </select>
                             <button type="submit" class="btn btn-primary btn-sm">Change Status</button>
                         </form>
                     </td>
+                    
                 </tr>
             {% endfor %}
         </tbody>

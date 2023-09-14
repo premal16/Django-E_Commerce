@@ -12,13 +12,13 @@
 						<div class="text-inner">
 							<div class="row">
 								<div class="col-lg-7 col-12">
-									<div class="hero-text">
+									<!-- <div class="hero-text">
 										<h1><span>UP TO 50% OFF </span>Shirt For Man</h1>
 										<p>Maboriosam in a nesciung eget magnae <br> dapibus disting tloctio in the find it pereri <br> odiy maboriosm.</p>
 										<div class="button">
 											<a href="#" class="btn">Shop Now!</a>
 										</div>
-									</div>
+									</div> -->
 								</div>
 							</div>
 						</div>
@@ -71,7 +71,7 @@
 														<div class="button-head">
 															<div class="product-action">
 																<a href="#" data-toggle="modal" data-target="#exampleModal" data-product-id="{{ product.id }}"><i class="ti-eye"></i><span>Quick Shop</span></a>
-																<a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a>
+																<!-- <a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a> -->
 																<!-- <a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a> -->
 															</div>
 															<div class="product-action-2">
@@ -111,10 +111,7 @@
 																</a>
 																<div class="button-head">
 																	<div class="product-action">
-																		<!-- <a data-toggle="modal" data-target="#exampleModal" title="Quick View" href="#"><i class="ti-eye"></i><span>Quick Shop</span></a> -->
 																		<a href="#" data-toggle="modal" data-target="#exampleModal" data-product-id="{{ product.id }}"><i class="ti-eye"></i><span>Quick Shop</span></a>
-																		<a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a>
-																		<!-- <a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a> -->
 																	</div>
 																	
 																	<div class="product-action-2">
@@ -179,7 +176,7 @@
             <div class="product-action">
                 <a href="#" data-toggle="modal" data-target="#exampleModal" data-product-id="{{ product.id }}"><i class="ti-eye"></i><span>Quick Shop</span>
                 </a>
-                <a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a>
+                <!-- <a title="Wishlist" href="#"><i class="ti-heart "></i><span>Add to Wishlist</span></a> -->
                 <!-- <a title="Compare" href="#"><i class="ti-bar-chart-alt"></i><span>Add to Compare</span></a> -->
             </div>
             <div class="product-action-2">
@@ -276,7 +273,7 @@
 											<i class="ti-minus"></i>
 										</button>
 									</div>
-									<input type="text" name="quant[1]" class="input-number"  data-min="1" data-max="1000" value="5">
+									<input type="text" name="quant[1]" class="input-number"  data-min="1" data-max="1000" value="1">
 									<div class="button plus">
 										<button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="quant[1]">
 											<i class="ti-plus"></i>
@@ -415,8 +412,9 @@ $(document).on('click', '.add-to-cart-link', function(e) {
 											<button class="btn">Add to Cart</button>
 										</a>
 										
-										<a href="#" class="btn min"><i class="ti-heart"></i></a>
-										<a href="#" class="btn min"><i class="fa fa-compress"></i></a>
+										
+										<a href="#" class="btn min class="close" data-dismiss="modal""><i class="fa fa-compress"></i></a>
+										
 									</div>
                                     <div class="default-social">
 										<h4 class="share-now">Share:</h4>
