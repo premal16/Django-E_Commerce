@@ -50,7 +50,9 @@ urlpatterns = [
     # path('success/',views.success, name='success'),
     path('success/<int:order_id>/', views.success, name='success'),
 
-    path('cancel/',views.cancel, name='cancel')
+    path('cancel/',views.cancel, name='cancel'),
+
+    path('webhook/', views.webhook, name='webhook'),
 
 
 

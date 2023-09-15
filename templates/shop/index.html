@@ -336,7 +336,7 @@ $(document).on('click', '.add-to-cart-link', function(e) {
         e.preventDefault();
         console.log('Button clicked');
         var productId = $(this).data('product-id');
-		console.log(productId)
+		console.log('Product ID:', productId);
     // Get the current quantity from the input field
 		var quantity = $('.input-number').val();
 		console.log("quantity....", quantity);

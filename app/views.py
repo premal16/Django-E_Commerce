@@ -12,6 +12,7 @@ from .forms import ProductForm,ProductForm1
 from django.views.generic import ListView, DetailView
 from django.contrib import messages
 from django.http import Http404,JsonResponse,HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
 
 import stripe
 from django.conf import settings
@@ -459,7 +460,7 @@ def session_try(request):
 
 
 
-
+@login_required(login_url='/login/')
 def user_home(request):
     selected_category_id = request.GET.get('category')
     products = Product.objects.all()
@@ -476,6 +477,7 @@ def user_home(request):
 
     return render(request, 'shop/index.html', context)
 
+@login_required(login_url='/login/')
 def user_product(request):
     selected_category_id = request.GET.get('category')
     products = Product.objects.all()
@@ -493,7 +495,7 @@ def user_product(request):
     return render(request, 'shop/product.html', context)
 
 
-
+@login_required(login_url='/login/')
 def quick_view(request, product_id):
     try:
         product = get_object_or_404(Product, pk=product_id)
@@ -512,24 +514,26 @@ def quick_view(request, product_id):
     
 
 
-
+@login_required(login_url='/login/')
 def add_to_cart(request):
     if request.method == 'POST':
         product_id = request.POST.get('product_id')
-        print('Received product_id:', product_id)
         quantity = int(request.POST.get('quantity', 1))
-        print('quantity.....1',quantity)
+        print('Received product_id:', product_id)
+        print('Received quantity:', quantity)
+
 
         try:
             product = Product.objects.get(id=product_id)
-            print("product is",product)
+            print("product is...........................................................................",product)
         except Product.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Product not found'})
 
         # Check if the user already has this product in their cart
-        cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product,quantity=quantity)
+        cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
 
         if not created:
+            print("this is in the created")
             # If the item already exists in the cart, update the quantity
             cart_item.quantity += quantity
             cart_item.save()
@@ -539,7 +543,7 @@ def add_to_cart(request):
         return JsonResponse({'success': False, 'message': 'Invalid request method'})
     
 
-
+@login_required(login_url='/login/')
 def cart(request):
     cart_subtotal = 0 
     cart_items = CartItem.objects.filter(user=request.user)
@@ -556,7 +560,7 @@ def cart(request):
     }
     return render(request, 'shop/cart.html',context)
 
-
+@login_required(login_url='/login/')
 def remove_cart_item(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id, user=request.user)
     cart_item.remove()  
@@ -564,7 +568,7 @@ def remove_cart_item(request, cart_item_id):
 
 
 
-
+@login_required(login_url='/login/')
 def update_cart_item(request, cart_item_id):
     if request.method == 'POST':
         new_quantity = int(request.POST.get('new_quantity'))
@@ -581,7 +585,7 @@ def update_cart_item(request, cart_item_id):
     return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
 
-
+@login_required(login_url='/login/')
 def checkout(request):
     cart_items = CartItem.objects.filter(user=request.user)
     if cart_items:
@@ -606,6 +610,8 @@ def checkout(request):
 
 
             cart_total = cart_subtotal
+            print("print total_amount",cart_total)
+
 
             order = Order.objects.create(
                 user=request.user,
@@ -630,7 +636,6 @@ def checkout(request):
             payment_method = request.POST.get('payment') 
 
             if payment_method == 'cod':
-                print("in cash")
                 try:
                     latest_order = Order.objects.filter(user=request.user).latest('date')
                 except Order.DoesNotExist:
@@ -646,6 +651,8 @@ def checkout(request):
     else:
         return redirect('cart')
 
+
+@login_required(login_url='/login/')
 def create_checkout_session(request):
     try:
         latest_order = Order.objects.filter(user=request.user).latest('date')
@@ -655,7 +662,8 @@ def create_checkout_session(request):
     line_items = []
     for cart_item in cart_items:
         product = cart_item.product
-        unit_amount_cents = int(cart_item.subtotal() * 100)  # Convert to cents
+        unit_amount_cents = int(cart_item.product.price * 100)  # Convert to cents
+        print("unit_amount_cents",unit_amount_cents)
 
         line_items.append({
             'price_data': {
@@ -675,6 +683,7 @@ def create_checkout_session(request):
         mode='payment',
         success_url=f'http://{current_domain}/success/{latest_order.id}',
         cancel_url=f'http://{current_domain}/cancel',
+        client_reference_id=str(request.user.id),
     )
 
     # Clear the cart after a successful order
@@ -684,7 +693,7 @@ def create_checkout_session(request):
 
 
 # @login_required
-
+@login_required(login_url='/login/')
 def success(request,order_id):
     # order_id = request.GET.get('order_id')
     # print("order_id..",order_id)
@@ -700,9 +709,68 @@ def success(request,order_id):
     }
     return render(request, 'shop/checkout_confirmation.html', context)
 
-
+@login_required(login_url='/login/')    
 def cancel(request):
     return render(request,'shop/cancel.html')
 
 
 
+@csrf_exempt  # Ensure CSRF protection is disabled for this view
+def webhook(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    webhook_secret_key = 'whsec_d7468e8ddb219e078adccb3512c426bc448f5bb69a280ac50b43413384173538'
+    # Verify the event data using your Stripe secret key
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret_key)
+    except ValueError as e:
+        # Invalid payload
+        return JsonResponse({'error': str(e)}, status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return JsonResponse({'error': str(e)}, status=400)
+
+    if event.type == 'checkout.session.completed':
+        # Payment was successful, create the order and clear the cart
+        session = event.data.object
+        order = create_order(session)  # Implement this function to create the order
+        print("session..............",session)
+
+        return JsonResponse({'status': 'success'})
+    else:
+        print('this is for not success')
+
+    return JsonResponse({'status': 'ignored'})
+
+
+def create_order(session):
+    # Extract relevant data from the session object
+    user_id = session.client_reference_id  # Assuming you store the user's ID as a client reference
+    print("create_order-user-id",user_id)
+    order = Order.objects.filter(user_id=user_id)
+
+    # Calculate the total amount based on the cart items
+    # total_amount = sum(cart_item.subtotal() for cart_item in cart_items)
+
+    # Create the order
+    # order = Order.objects.create(
+    #     # user_id=user_id,
+    #     # total_amount=total_amount,
+    #     # status='Processing',  # You can set the appropriate order status here
+    #     # Add other order details like name, email, address, etc.
+    #     payment_done = True
+    # )
+
+    # Add cart items to the order
+    # for cart_item in cart_items:
+    #     OrderItem.objects.create(
+    #         order=order,
+    #         product=cart_item.product,
+    #         quantity=cart_item.quantity,
+    #         price=cart_item.product.price
+    #     )
+
+    # Clear the user's cart
+    # cart_items.delete()
+
+    return order

@@ -91,6 +91,7 @@ class Order(models.Model):
     payment_method = models.CharField(max_length=20,default=False)
     address = models.CharField(max_length=200, default='', blank=True)
     mobile_number = models.CharField(max_length=12, default='', blank=True)
+    payment_done = models.BooleanField(default=False)
 
 
     def __str__(self):
