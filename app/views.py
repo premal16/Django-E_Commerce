@@ -613,36 +613,38 @@ def checkout(request):
             print("print total_amount",cart_total)
 
 
-            order = Order.objects.create(
-                user=request.user,
-                name=name,
-                email=email,
-                status='Processing',
-                total_amount=cart_total,
-                address=address,
-                payment_method = payment_method,
-                mobile_number=mobile_number
-            )
-            for cart_item in cart_items:
-                order.product.add(cart_item.product)
+            # order = Order.objects.create(
+            #     user=request.user,
+            #     name=name,
+            #     email=email,
+            #     status='Processing',
+            #     total_amount=cart_total,
+            #     address=address,
+            #     payment_method = payment_method,
+            #     mobile_number=mobile_number
+            # )
+            # for cart_item in cart_items:
+            #     order.product.add(cart_item.product)
                 
-            for cart_item in cart_items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=cart_item.product,
-                    quantity=cart_item.quantity,
-                    price=cart_item.product.price  
-                )
-            payment_method = request.POST.get('payment') 
+            # for cart_item in cart_items:
+            #     OrderItem.objects.create(
+            #         order=order,
+            #         product=cart_item.product,
+            #         quantity=cart_item.quantity,
+            #         price=cart_item.product.price  
+            #     )
+            # payment_method = request.POST.get('payment') 
 
             if payment_method == 'cod':
-                try:
-                    latest_order = Order.objects.filter(user=request.user).latest('date')
-                except Order.DoesNotExist:
-                    return HttpResponseBadRequest("No orders found for the current user")
-                CartItem.objects.filter(user=request.user).delete()
+                print("COD in")
+                # try:
+                #     latest_order = Order.objects.filter(user=request.user).latest('date')
+                # except Order.DoesNotExist:
+                #     return HttpResponseBadRequest("No orders found for the current user")
+                # CartItem.objects.filter(user=request.user).delete()
 
-                return redirect('success', order_id=latest_order.id)
+                # return redirect('success', order_id=latest_order.id)
+                return redirect('success')
             else:
             # Redirect to the create_checkout_session view
                 return redirect('checkout_session')
@@ -654,16 +656,16 @@ def checkout(request):
 
 @login_required(login_url='/login/')
 def create_checkout_session(request):
-    try:
-        latest_order = Order.objects.filter(user=request.user).latest('date')
-    except Order.DoesNotExist:
-        return HttpResponseBadRequest("No orders found for the current user")
+    print("CHECK ..........in")
+    # try:
+    #     latest_order = Order.objects.filter(user=request.user).latest('date')
+    # except Order.DoesNotExist:
+    #     return HttpResponseBadRequest("No orders found for the current user")
     cart_items = CartItem.objects.filter(user=request.user)
     line_items = []
     for cart_item in cart_items:
         product = cart_item.product
         unit_amount_cents = int(cart_item.product.price * 100)  # Convert to cents
-        print("unit_amount_cents",unit_amount_cents)
 
         line_items.append({
             'price_data': {
@@ -681,33 +683,35 @@ def create_checkout_session(request):
         payment_method_types=['card'],
         line_items=line_items,
         mode='payment',
-        success_url=f'http://{current_domain}/success/{latest_order.id}',
+        # success_url=f'http://{current_domain}/success/{latest_order.id}',
+        success_url=f'http://{current_domain}/success/',
         cancel_url=f'http://{current_domain}/cancel',
         client_reference_id=str(request.user.id),
     )
 
     # Clear the cart after a successful order
-    CartItem.objects.filter(user=request.user).delete()
+    # CartItem.objects.filter(user=request.user).delete()
 
     return redirect(session.url, code=303)
 
 
-# @login_required
-@login_required(login_url='/login/')
-def success(request,order_id):
-    # order_id = request.GET.get('order_id')
-    # print("order_id..",order_id)
-    # if not order_id:
-    #     return HttpResponseBadRequest("Missing order_id parameter")
-    try:
-        latest_order = Order.objects.get(id=order_id)
-    except Order.DoesNotExist:
-        return HttpResponseBadRequest("Order not found")
+# # @login_required
+# @login_required(login_url='/login/')
+# def success(request,order_id):
+#     print("+++++++++++++++++++++++++++++++++++",request.user)
+#     # order_id = request.GET.get('order_id')
+#     # print("order_id..",order_id)
+#     # if not order_id:
+#     #     return HttpResponseBadRequest("Missing order_id parameter")
+#     try:
+#         latest_order = Order.objects.get(id=order_id)
+#     except Order.DoesNotExist:
+#         return HttpResponseBadRequest("Order not found")
 
-    context = {
-        'latest_order': latest_order,
-    }
-    return render(request, 'shop/checkout_confirmation.html', context)
+#     context = {
+#         'latest_order': latest_order,
+#     }
+#     return render(request, 'shop/checkout_confirmation.html', context)
 
 @login_required(login_url='/login/')    
 def cancel(request):
@@ -715,62 +719,108 @@ def cancel(request):
 
 
 
-@csrf_exempt  # Ensure CSRF protection is disabled for this view
-def webhook(request):
-    payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-    webhook_secret_key = 'whsec_d7468e8ddb219e078adccb3512c426bc448f5bb69a280ac50b43413384173538'
-    # Verify the event data using your Stripe secret key
-    try:
-        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret_key)
-    except ValueError as e:
-        # Invalid payload
-        return JsonResponse({'error': str(e)}, status=400)
-    except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        return JsonResponse({'error': str(e)}, status=400)
+# @csrf_exempt  # Ensure CSRF protection is disabled for this view
+# def webhook(request):
+#     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+#     payload = request.body
+#     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+#     webhook_secret_key = 'whsec_d7468e8ddb219e078adccb3512c426bc448f5bb69a280ac50b43413384173538'
+#     # Verify the event data using your Stripe secret key
+#     try:
+#         event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret_key)
+#     except ValueError as e:
+#         # Invalid payload
+#         return JsonResponse({'error': str(e)}, status=400)
+#     except stripe.error.SignatureVerificationError as e:
+#         # Invalid signature
+#         return JsonResponse({'error': str(e)}, status=400)
 
-    if event.type == 'checkout.session.completed':
-        # Payment was successful, create the order and clear the cart
-        session = event.data.object
-        order = create_order(session)  # Implement this function to create the order
-        print("session..............",session)
+#     if event.type == 'checkout.session.completed':
+#         # Payment was successful, create the order and clear the cart
+#         session = event.data.object
+#         order = create_order(session)  # Implement this function to create the order
+#         print("session..............",session)
 
-        return JsonResponse({'status': 'success'})
-    else:
-        print('this is for not success')
+#         return JsonResponse({'status': 'success'})
+#     else:
+#         print('this is for not success')
 
-    return JsonResponse({'status': 'ignored'})
+#     return JsonResponse({'status': 'ignored'})
 
 
-def create_order(session):
-    # Extract relevant data from the session object
-    user_id = session.client_reference_id  # Assuming you store the user's ID as a client reference
-    print("create_order-user-id",user_id)
-    order = Order.objects.filter(user_id=user_id)
+# def create_order(session,request):
+#     # Extract relevant data from the session object
+#     user_id = session.client_reference_id  # Assuming you store the user's ID as a client reference
+#     print("create_order-user-id",user_id)
+#     latest_order = Order.objects.filter(user=request.user).latest('date')
+#     # order = Order.objects.filter(user_id=user_id)
+#     print("order",latest_order)
+#     # Calculate the total amount based on the cart items
+#     # total_amount = sum(cart_item.subtotal() for cart_item in cart_items)
 
-    # Calculate the total amount based on the cart items
-    # total_amount = sum(cart_item.subtotal() for cart_item in cart_items)
+#     # Create the order
+#     # order = Order.objects.create(
+#     #     # user_id=user_id,
+#     #     # total_amount=total_amount,
+#     #     # status='Processing',  # You can set the appropriate order status here
+#     #     # Add other order details like name, email, address, etc.
+#     #     payment_done = True
+#     # )
 
-    # Create the order
-    # order = Order.objects.create(
-    #     # user_id=user_id,
-    #     # total_amount=total_amount,
-    #     # status='Processing',  # You can set the appropriate order status here
-    #     # Add other order details like name, email, address, etc.
-    #     payment_done = True
-    # )
+#     # Add cart items to the order
+#     # for cart_item in cart_items:
+#     #     OrderItem.objects.create(
+#     #         order=order,
+#     #         product=cart_item.product,
+#     #         quantity=cart_item.quantity,
+#     #         price=cart_item.product.price
+#     #     )
 
-    # Add cart items to the order
-    # for cart_item in cart_items:
-    #     OrderItem.objects.create(
-    #         order=order,
-    #         product=cart_item.product,
-    #         quantity=cart_item.quantity,
-    #         price=cart_item.product.price
-    #     )
+#     # Clear the user's cart
+#     # cart_items.delete()
 
-    # Clear the user's cart
-    # cart_items.delete()
+#     return order
 
-    return order
+
+def success(request):
+    print("SUCCESS.......in")
+
+
+    cart_items = CartItem.objects.filter(user=request.user)
+    print("this is the success cart",cart_items)
+    if cart_items:
+        cart_subtotal = 0
+        for cart_item in cart_items:
+            cart_subtotal += cart_item.subtotal()
+        cart_total = cart_subtotal
+
+
+    order = Order.objects.create(
+    user=request.user,
+    name='test1212',
+    email='test1212email',
+    status='Processing',
+    total_amount=cart_total,
+    address='test1212adderssds',
+    payment_method = 'online',
+    mobile_number='700000077',
+    payment_done = True
+    )
+
+    for cart_item in cart_items:
+                order.product.add(cart_item.product)
+                
+    for cart_item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            product=cart_item.product,
+            quantity=cart_item.quantity,
+            price=cart_item.product.price  
+        )
+    print("this is order of this order",order)    
+    context = {
+        'latest_order': order,
+    }
+    CartItem.objects.filter(user=request.user).delete()
+    
+    return render(request, 'shop/checkout_confirmation.html', context)
