@@ -109,15 +109,12 @@ def edit_profile(request, user_id=None):
         user = request.user
         profile, created = UserProfile.objects.get_or_create(user=user)
 
-        print("this is logged user...............")
     else:
         if request.user.is_superuser:
             user = CustomUser.objects.get(id=user_id)
             profile = user.userprofile
-            print("this is by admin..............")
         else:
             return HttpResponse("You don't have permission to edit this user's profile.")
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     if request.method == 'POST':
         try:
             about = request.POST.get('about', '')
@@ -142,13 +139,10 @@ def edit_profile(request, user_id=None):
             profile.save()
             messages.success(request, "Profile data updated successfully!")
 
-            print(user_id)
             if user_id is None:
-                print("innnnn")
                 return redirect('profile')
             
             else:
-                print('out.......')
                 return redirect('user-profile',pk=user.id)  
 
         except IntegrityError as e:
@@ -196,18 +190,14 @@ def product_detail(request, product_id):
 def product_update(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
 
-    print(product)
     if request.method == 'POST':
         form = ProductForm1(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
-            print("11111111111")
             return redirect('product-detail', product_id=product_id)
     else:
-        # print("innnn",form)
         form = ProductForm(instance=product)
     context = {'form': form, 'product': product}
-    print('121212')
     return render(request, 'product_update.html', context)
 
 @superuser_required
@@ -309,7 +299,6 @@ def product_list(request):
 def session_try(request):
     num_visits = request.session.get('num_visits', 0)
     request.session['num_visits'] = num_visits + 1
-    print(request)
     context = {
         'num_visits': num_visits,
     }
@@ -385,7 +374,6 @@ def add_to_cart(request):
 
         try:
             product = Product.objects.get(id=product_id)
-            print("product is...........................................................................",product)
         except Product.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Product not found'})
 
@@ -393,7 +381,6 @@ def add_to_cart(request):
         cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
 
         if not created:
-            print("this is in the created")
             # If the item already exists in the cart, update the quantity
             cart_item.quantity += quantity
             cart_item.save()
@@ -407,12 +394,9 @@ def add_to_cart(request):
 def cart(request):
     cart_subtotal = 0 
     cart_items = CartItem.objects.filter(user=request.user)
-    print('items:',cart_items)
-    print(request.user)
     for cart_item in cart_items:
         cart_subtotal += cart_item.subtotal()
     cart_total = cart_subtotal
-    print("cart_total",cart_total)
     context = {
         'cart_items': cart_items,
         'cart_subtotal': cart_subtotal,
@@ -556,18 +540,13 @@ def cancel(request):
 
 
 def success(request):
-    print("SUCCESS.......in")
-
-
     cart_items = CartItem.objects.filter(user=request.user)
-    print("this is the success cart",cart_items)
     if cart_items:
         cart_subtotal = 0
         for cart_item in cart_items:
             cart_subtotal += cart_item.subtotal()
         cart_total = cart_subtotal
     checkout_data = request.session.get('checkout_data')
-    print("checkout data",checkout_data)
 
     if not checkout_data:
         return HttpResponseBadRequest("Missing session data")
@@ -594,10 +573,13 @@ def success(request):
             quantity=cart_item.quantity,
             price=cart_item.product.price  
         )
-    print("this is order of this order",order)    
     context = {
         'latest_order': order,
     }
     CartItem.objects.filter(user=request.user).delete()
     
     return render(request, 'shop/checkout_confirmation.html', context)
+
+
+def extra(request):
+    return render(request,'extra.html')

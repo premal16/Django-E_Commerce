@@ -43,5 +43,10 @@ urlpatterns = [
     path('success/',views.success, name='success'),
     path('cancel/',views.cancel, name='cancel'),
 
+    path('extra/',views.extra, name='extra'),
+
+
+
+
 ]
 
