@@ -13,11 +13,32 @@ from django.views.generic import ListView, DetailView
 from django.contrib import messages
 from django.http import Http404,JsonResponse,HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
 
 import stripe
 from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+
+
+# def is_admin(user):
+#     return user.is_authenticated and user.is_superuser
+
+from functools import wraps
+from django.http import HttpResponseForbidden
+
+def superuser_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and request.user.is_superuser:
+            return view_func(request, *args, **kwargs)
+        else:
+            # return HttpResponseForbidden("Access denied. You must be a superuser to view this page.")
+            return redirect('user-home')
+    return _wrapped_view
+
+@superuser_required
 @login_required(login_url='login/')
 def homePage(request):
     products = Product.objects.all()
@@ -80,107 +101,6 @@ def logout_view(request):
     return redirect('login') 
 
 
-
-# @login_required(login_url='/login/')
-# def edit_profile(request):
-#     try:
-#         user = request.user 
-#         print(user.email)
-#         profile, created = UserProfile.objects.get_or_create(user=user)
-#         error_message = None 
-#         if request.method == 'POST':
-#             try:
-#                 about = request.POST.get('about', '')
-#                 profile_pic = request.FILES.get('profile_pic', None)
-#                 job_title = request.POST.get('job_title', '')
-#                 country = request.POST.get('country', '')
-#                 address = request.POST.get('address', '')
-#                 email = request.POST.get('email', '')
-#                 mobile_number = request.POST.get('mobile_number')
-#                 profile.job_title = job_title
-#                 # Update profile fields and save
-#                 profile.about = about
-#                 profile.country = country
-#                 profile.address = address
-#                 profile.mobile_number = mobile_number
-#                 user.email = email
-#                 user.save()
-#                 if profile_pic:
-#                     profile.profile_pic = profile_pic
-#                 profile.save()
-#                 return redirect('profile')  
-#             except IntegrityError as e:
-#                 if 'UNIQUE constraint' in str(e) and 'email' in str(e):
-#                     error_message = "The provided email is already in use."
-#                 else:
-#                     error_message = "An error occurred while updating the profile." 
-                
-#         return render(request, 'profile.html', {'error_message': error_message})
-#     except Exception as e:
-#         print(e)
-
-
-
-
-
-# @login_required(login_url='/login/')
-# def edit_profile(request, user_id=None):
-#     error_message = None 
-#     if user_id is None:
-#         user = request.user
-#         profile, created = UserProfile.objects.get_or_create(user=user)
-#         print("this is logged user...............")
-#     else:
-#         if request.user.is_superuser:
-#             user = CustomUser.objects.get(id=user_id)
-#             profile = user.userprofile
-#             print("this is by admin..............")
-#         else:
-#             return HttpResponse("You don't have permission to edit this user's profile.")
-#         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-#     if request.method == 'POST':
-#         try:
-#             about = request.POST.get('about', '')
-#             profile_pic = request.FILES.get('profile_pic', None)
-#             job_title = request.POST.get('job_title', '')
-#             country = request.POST.get('country', '')
-#             address = request.POST.get('address', '')
-#             email = request.POST.get('email', '')
-#             mobile_number = request.POST.get('mobile_number')
-            
-#             if email != user.email and CustomUser.objects.filter(email=email).exclude(id=user.id).exists():
-#                 messages.error(request, "The provided email is already in use.")
-#             else:
-#                 profile.job_title = job_title
-#                 # Update profile fields and save
-#                 profile.about = about
-#                 profile.country = country
-#                 profile.address = address
-#                 profile.mobile_number = mobile_number
-#                 user.email = email
-#                 user.save()
-#                 if profile_pic:
-#                     profile.profile_pic = profile_pic
-#                 profile.save()
-#                 print(user_id)
-#                 if user_id is None:
-#                     print("innnnn")
-#                     messages.success(request, "Profile updated successfully.")
-#                     return redirect('profile')
-#                 else:
-#                     print('out.......')
-#                     messages.success(request, "Profile updated successfully.")
-#                     return redirect('user-profile', pk=user.id)  
-
-#         except IntegrityError as e:
-#             if 'UNIQUE constraint' in str(e) and 'email' in str(e):
-#                 messages.error(request, "The provided email is already in use.")
-#             else:
-#                 messages.error(request, "An error occurred while updating the profile.") 
-#         return redirect('user-profile', pk=user.id)  
-            
-    
-#     return render(request, 'user_profile.html')
 
 @login_required(login_url='/login/')
 def edit_profile(request, user_id=None):
@@ -266,6 +186,7 @@ def change_password(request):
 def contactPage(request):
     return render(request,'contact.html')
 
+@superuser_required
 @login_required(login_url='/login/')
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
@@ -289,7 +210,7 @@ def product_update(request, product_id):
     print('121212')
     return render(request, 'product_update.html', context)
 
-
+@superuser_required
 def product_delete(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     if request.method == 'POST':
@@ -297,7 +218,7 @@ def product_delete(request, product_id):
         return redirect('home')
     return render(request, 'product_delete.html', {'product': product})
 
-
+@superuser_required
 def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -309,17 +230,20 @@ def add_product(request):
     return render(request, 'add_product.html', {'form': form})
 
 
-class OrderListView(ListView):
+@method_decorator(staff_member_required, name='dispatch')
+class SuperuserOrderListView(ListView):
     model = Order
     template_name = 'order_list.html'
     context_object_name = 'orders'
 
-
+@method_decorator(staff_member_required, name='dispatch')
 class OrderDetailView(DetailView):
     model = Order
     template_name = 'order_detail.html'
     context_object_name = 'order'
 
+    
+@superuser_required
 def change_order_status(request, order_id):
     order = get_object_or_404(Order, pk=order_id)
     if request.method == 'POST':
@@ -329,6 +253,7 @@ def change_order_status(request, order_id):
             order.save()
     return redirect('admin-order-list')
 
+@superuser_required
 def user(request):
     products = Product.objects.all()
     orders = Order.objects.all()
@@ -336,6 +261,7 @@ def user(request):
     context = {'products': products,'users':users,'orders':orders}
     return render(request,'user_list.html',context)
 
+# @superuser_required
 class UserDetailview(DetailView):
     print("@@@@@@@@@@@@@")
     model = UserProfile
@@ -358,24 +284,12 @@ def custom_user_delete(request, user_id):
     return render(request, 'user_list.html', {'user': user})
 
 
-# def product_list(request):
-#     products = Product.objects.all()  
-#     context = {'products': products}
-#     return render(request, 'product_list.html', context)
-
+@superuser_required
 def category_list(request):
     categories = Category.objects.all()
     return render(request, 'product_category.html', {'categories': categories})
 
-# def product_list_by_category(request, category_id):
-#     category = Category.objects.get(id=category_id)
-#     products = Product.objects.filter(category=category)
-#     print(request)
-#     print(products)
-#     print(category)
-#     return render(request, 'product_list.html', {'category': category, 'products': products})
-
-
+@superuser_required
 def product_list(request):
     categories = Category.objects.all()
     products = Product.objects.all()
@@ -400,60 +314,6 @@ def session_try(request):
         'num_visits': num_visits,
     }
     return render(request, 'session-try.html', context=context)
-
-
-
-
-
-# def user_home(request):
-#     selected_category_id = request.GET.get('category')
-
-#     products = Product.objects.all()
-#     categories = Category.objects.all()
-
-#     if selected_category_id:
-#         products = Product.objects.filter(category__id=selected_category_id)
-#     return render(request, 'shop/index.html', {'products': products, 'categories': categories})
-
-
-
-# def user_home(request):
-#     selected_category_id = request.GET.get('category')
-
-#     products = Product.objects.all()
-#     categories = Category.objects.all()
-
-#     if selected_category_id:
-#         products = Product.objects.filter(category__id=selected_category_id)
-
-#     product_id = request.GET.get('product_id')
-
-#     if product_id:
-#         product = Product.objects.get(id=product_id)
-#         context = {
-#             'products': products,
-#             'categories': categories,
-#             'product': product,
-#         }
-#     else:
-#         context = {
-#             'products': products,
-#             'categories': categories,
-#         }
-
-#     return render(request, 'shop/index.html', context)
-
-
-# def user_product(request):
-#     selected_category_id = request.GET.get('category')
-    
-#     products = Product.objects.all()
-#     categories = Category.objects.all()
-    
-#     if selected_category_id:
-#         products = Product.objects.filter(category__id=selected_category_id)
-        
-#     return render(request, 'shop/product.html', {'products': products, 'categories': categories})
 
 
 
@@ -600,50 +460,21 @@ def checkout(request):
         }
 
         if request.method == 'POST':
-            print("innnnnnnn")
-            name = request.POST.get('name')
-            email = request.POST.get('email')
-            mobile_number = request.POST.get('mobile_number')
-            address = request.POST.get('address')
-            payment_method = request.POST.get('payment') 
-            print("payment methiod is", payment_method)
+            request.session['checkout_data'] = {
+                'name': request.POST.get('name'),
+                'email': request.POST.get('email'),
+                'mobile_number': request.POST.get('mobile_number'),
+                'address': request.POST.get('address'),
+                'payment_method': request.POST.get('payment')
+            }
 
 
             cart_total = cart_subtotal
-            print("print total_amount",cart_total)
 
 
-            # order = Order.objects.create(
-            #     user=request.user,
-            #     name=name,
-            #     email=email,
-            #     status='Processing',
-            #     total_amount=cart_total,
-            #     address=address,
-            #     payment_method = payment_method,
-            #     mobile_number=mobile_number
-            # )
-            # for cart_item in cart_items:
-            #     order.product.add(cart_item.product)
-                
-            # for cart_item in cart_items:
-            #     OrderItem.objects.create(
-            #         order=order,
-            #         product=cart_item.product,
-            #         quantity=cart_item.quantity,
-            #         price=cart_item.product.price  
-            #     )
-            # payment_method = request.POST.get('payment') 
+            payment_method = request.POST.get('payment') 
 
             if payment_method == 'cod':
-                print("COD in")
-                # try:
-                #     latest_order = Order.objects.filter(user=request.user).latest('date')
-                # except Order.DoesNotExist:
-                #     return HttpResponseBadRequest("No orders found for the current user")
-                # CartItem.objects.filter(user=request.user).delete()
-
-                # return redirect('success', order_id=latest_order.id)
                 return redirect('success')
             else:
             # Redirect to the create_checkout_session view
@@ -656,11 +487,6 @@ def checkout(request):
 
 @login_required(login_url='/login/')
 def create_checkout_session(request):
-    print("CHECK ..........in")
-    # try:
-    #     latest_order = Order.objects.filter(user=request.user).latest('date')
-    # except Order.DoesNotExist:
-    #     return HttpResponseBadRequest("No orders found for the current user")
     cart_items = CartItem.objects.filter(user=request.user)
     line_items = []
     for cart_item in cart_items:
@@ -683,7 +509,6 @@ def create_checkout_session(request):
         payment_method_types=['card'],
         line_items=line_items,
         mode='payment',
-        # success_url=f'http://{current_domain}/success/{latest_order.id}',
         success_url=f'http://{current_domain}/success/',
         cancel_url=f'http://{current_domain}/cancel',
         client_reference_id=str(request.user.id),
@@ -694,24 +519,6 @@ def create_checkout_session(request):
 
     return redirect(session.url, code=303)
 
-
-# # @login_required
-# @login_required(login_url='/login/')
-# def success(request,order_id):
-#     print("+++++++++++++++++++++++++++++++++++",request.user)
-#     # order_id = request.GET.get('order_id')
-#     # print("order_id..",order_id)
-#     # if not order_id:
-#     #     return HttpResponseBadRequest("Missing order_id parameter")
-#     try:
-#         latest_order = Order.objects.get(id=order_id)
-#     except Order.DoesNotExist:
-#         return HttpResponseBadRequest("Order not found")
-
-#     context = {
-#         'latest_order': latest_order,
-#     }
-#     return render(request, 'shop/checkout_confirmation.html', context)
 
 @login_required(login_url='/login/')    
 def cancel(request):
@@ -724,7 +531,7 @@ def cancel(request):
 #     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 #     payload = request.body
 #     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-#     webhook_secret_key = 'whsec_d7468e8ddb219e078adccb3512c426bc448f5bb69a280ac50b43413384173538'
+#     webhook_secret_key = settings.STRIPE_WEBHOOK_SECRET
 #     # Verify the event data using your Stripe secret key
 #     try:
 #         event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret_key)
@@ -738,7 +545,7 @@ def cancel(request):
 #     if event.type == 'checkout.session.completed':
 #         # Payment was successful, create the order and clear the cart
 #         session = event.data.object
-#         order = create_order(session)  # Implement this function to create the order
+        # order = create_order(session)  # Implement this function to create the order
 #         print("session..............",session)
 
 #         return JsonResponse({'status': 'success'})
@@ -746,40 +553,6 @@ def cancel(request):
 #         print('this is for not success')
 
 #     return JsonResponse({'status': 'ignored'})
-
-
-# def create_order(session,request):
-#     # Extract relevant data from the session object
-#     user_id = session.client_reference_id  # Assuming you store the user's ID as a client reference
-#     print("create_order-user-id",user_id)
-#     latest_order = Order.objects.filter(user=request.user).latest('date')
-#     # order = Order.objects.filter(user_id=user_id)
-#     print("order",latest_order)
-#     # Calculate the total amount based on the cart items
-#     # total_amount = sum(cart_item.subtotal() for cart_item in cart_items)
-
-#     # Create the order
-#     # order = Order.objects.create(
-#     #     # user_id=user_id,
-#     #     # total_amount=total_amount,
-#     #     # status='Processing',  # You can set the appropriate order status here
-#     #     # Add other order details like name, email, address, etc.
-#     #     payment_done = True
-#     # )
-
-#     # Add cart items to the order
-#     # for cart_item in cart_items:
-#     #     OrderItem.objects.create(
-#     #         order=order,
-#     #         product=cart_item.product,
-#     #         quantity=cart_item.quantity,
-#     #         price=cart_item.product.price
-#     #     )
-
-#     # Clear the user's cart
-#     # cart_items.delete()
-
-#     return order
 
 
 def success(request):
@@ -793,17 +566,21 @@ def success(request):
         for cart_item in cart_items:
             cart_subtotal += cart_item.subtotal()
         cart_total = cart_subtotal
+    checkout_data = request.session.get('checkout_data')
+    print("checkout data",checkout_data)
 
-
+    if not checkout_data:
+        return HttpResponseBadRequest("Missing session data")
+    
     order = Order.objects.create(
     user=request.user,
-    name='test1212',
-    email='test1212email',
+    name=checkout_data['name'],
+    email=checkout_data['email'],
     status='Processing',
     total_amount=cart_total,
-    address='test1212adderssds',
-    payment_method = 'online',
-    mobile_number='700000077',
+    address=checkout_data['address'],
+    payment_method = checkout_data['payment_method'],
+    mobile_number=checkout_data['mobile_number'],
     payment_done = True
     )
 
