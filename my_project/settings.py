@@ -183,7 +183,7 @@ AUTHENTICATION_BACKENDS = (
 AUTHENTICATION_BACKENDS = (
     # 'social_core.backends.github.GithubOAuth2', # github <----
     # 'social_core.backends.twitter.TwitterOAuth', # twitter <----
-    # 'social_core.backends.facebook.FacebookOAuth2', # facebook <----
+    'social_core.backends.facebook.FacebookOAuth2', # facebook <----
     'social_core.backends.google.GoogleOAuth2',  # google <----
     'django.contrib.auth.backends.ModelBackend',
 )

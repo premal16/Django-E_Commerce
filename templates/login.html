@@ -98,10 +98,15 @@
                     </div>
                       <!-- Google Login Button -->
                      
-                      <!-- Add this button to your login template (login.html) -->
-                      <div class="col-12">
-                        <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-google w-100">Login with Google</a>
-                      </div>
+              
+                    <div class="col-12 text-center">
+                      <a href="{% url 'social:begin' 'google-oauth2' %}" class="google-login-button mx-auto">
+                          <img src="{% static 'assets/img/icon-google.png' %}" alt="Google Logo">
+                          Login with Google
+                      </a>
+                  </div>
+                  
+                  
 
                     <div class="col-12">
                       <p class="small mb-0">Don't have an account? <a href="{% url 'register' %}">Create an account</a></p>
