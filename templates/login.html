@@ -3,6 +3,8 @@
 
 <head>
 {% load static %}
+{% load socialaccount %}
+
 
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -54,9 +56,9 @@
 
                 <div class="card-body">
                   {% if messages %}
-                  {% for message in messages %}
+                  <!-- {% for message in messages %}
                       <div class="alert alert-success">{{ message }}</div>
-                  {% endfor %}
+                  {% endfor %} -->
               {% endif %}
                   <div class="pt-4 pb-2">
                     <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
@@ -94,6 +96,13 @@
                     <div class="col-12">
                       <button class="btn btn-primary w-100" type="submit">Login</button>
                     </div>
+                      <!-- Google Login Button -->
+                     
+                      <!-- Add this button to your login template (login.html) -->
+                      <div class="col-12">
+                        <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-google w-100">Login with Google</a>
+                      </div>
+
                     <div class="col-12">
                       <p class="small mb-0">Don't have an account? <a href="{% url 'register' %}">Create an account</a></p>
                     </div>

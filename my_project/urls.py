@@ -18,10 +18,15 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('app.urls')),
+    # path('accounts/', include('allauth.urls')),  # Include allauth URLs
+    # path('accounts/', include('allauth.socialaccount.urls')),  # Include socialaccount URLs
+    path('social-auth/', include('social_django.urls',namespace='social')),  # Include socialaccount URLs
+
 
 ]
 if settings.DEBUG:

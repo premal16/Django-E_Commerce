@@ -2,6 +2,7 @@ envenv/
 app/__pycache__
 app/migrations
 my_project/__pycache__
+my_project/settings1.py
 template_original/
 static-original/
 static/admin/

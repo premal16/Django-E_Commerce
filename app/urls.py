@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
@@ -44,6 +45,15 @@ urlpatterns = [
     path('cancel/',views.cancel, name='cancel'),
 
     path('extra/',views.extra, name='extra'),
+
+
+
+
+    # path('google/callback/', views.GoogleLoginCallback.as_view(), name='google_login_callback'),
+
+
+
+    
 
 
 

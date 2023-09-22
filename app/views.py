@@ -16,6 +16,14 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 
+
+from allauth.socialaccount.providers.oauth2.client import OAuth2Error
+from allauth.socialaccount import providers
+from allauth.socialaccount.helpers import complete_social_login
+from allauth.socialaccount.models import SocialApp
+from allauth.socialaccount.providers.oauth2.client import OAuth2Error
+from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2CallbackView, OAuth2LoginView
+
 import stripe
 from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -70,7 +78,7 @@ def register_and_login(request):
 
 
 def login(request):
-    try:
+    # try:
         if request.method == 'POST':
             username = request.POST['username']
             password = request.POST['password']
@@ -86,9 +94,10 @@ def login(request):
                     return redirect('user-home')
             else:
                 return render(request, 'login.html', {'error_message': 'Invalid credentials'})
-        return render(request, 'login.html')
-    except Exception as e:
-        print(e)
+        else:
+            return render(request, 'login.html')
+    # except Exception as e:
+    #     print(e)
 
 
 @login_required(login_url='/login/')
@@ -583,3 +592,58 @@ def success(request):
 
 def extra(request):
     return render(request,'extra.html')
+
+
+
+
+
+# def google_login_callback(request):
+#     # Handle the Google login callback
+#     # This view will be used as the callback URL in your Google API credentials
+#     app = SocialApp.objects.get(provider='google')  # Ensure 'google' matches the provider name you configured
+
+#     # Handle the Google OAuth2 callback using allauth's OAuth2CallbackView
+#     oauth2_adapter = OAuth2Adapter(app)
+#     view = OAuth2CallbackView.as_view(adapter=oauth2_adapter)
+#     response = view(request)
+
+#     # Check if there was an error during Google OAuth2 authentication
+#     if response.status_code == 400:
+#         try:
+#             error_message = response.data['error_description']
+#         except (KeyError, TypeError):
+#             error_message = "An error occurred during Google login."
+#         return render(request, 'login.html', {'error_message': error_message})
+
+#     # If successful, complete the social login
+#     complete_social_login(request, providers.registry.by_id('google'))
+    
+#     # Redirect to the desired page after successful login
+#     return redirect('home')  # Replace 'home' with the URL name of your choice
+
+
+from allauth.socialaccount.models import SocialApp, SocialAccount
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.views import View
+
+class GoogleLoginCallback(View):
+    def get(self, request):
+        print("request.user",request.user)
+        try:
+            # Ensure that you have configured the Google social app in the Django admin panel
+            social_app = SocialApp.objects.get(provider='google')  # Make sure 'google' matches the provider ID
+            print("social_app",social_app)
+            social_token = SocialAccount.objects.get(user=request.user, provider='google')
+            print("social_token",social_token)
+
+            # You can access the Google access token here: social_token.tokens
+
+            # Implement your own logic here, e.g., check user's email and grant permissions accordingly
+
+            auth_login(request, request.user)
+            return HttpResponseRedirect(reverse('user-home'))  # Redirect to user's home page after successful login
+        except SocialApp.DoesNotExist:
+            return render(request, 'error.html', {'error_message': 'Google login is not configured.'})
+        except OAuth2Error:
+            return render(request, 'error.html', {'error_message': 'Error logging in with Google.'})
