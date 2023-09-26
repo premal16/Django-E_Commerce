@@ -1,0 +1,381 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+{% load static %}
+	<!-- Breadcrumbs -->
+	<div class="breadcrumbs">
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					<div class="bread-inner">
+						<ul class="bread-list">
+							<li><a href="index1.html">Home<i class="ti-arrow-right"></i></a></li>
+							<li class="active"><a href="blog-single.html">Cart</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End Breadcrumbs -->
+
+<!-- Shopping Cart -->
+<div class="shopping-cart section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <!-- Shopping Summery -->
+                <table class="table shopping-summery">
+                    <thead>
+                        <tr class="main-hading">
+                            <th>PRODUCT</th>
+                            <th>NAME</th>
+                            <th class="text-center">UNIT PRICE</th>
+                            <th class="text-center">QUANTITY</th>
+                            <th class="text-center">TOTAL</th>
+                            <th class="text-center"><i class="ti-trash remove-icon"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cart_item in cart_items %}
+                        <tr>
+                            <td class="image" data-title="No">
+                                <img src="{{ cart_item.product.product_image.url }}" alt="{{ cart_item.product.label }}">
+                            </td>
+                            <td class="product-des" data-title="Description">
+                                <p class="product-name"><a href="#">{{ cart_item.product.label }}</a></p>
+                                <p class="product-des">{{ cart_item.product.description }}</p>
+                            </td>
+                            <td class="price" data-title="Price"><span>${{ cart_item.product.price }}</span></td>
+                            <td class="qty" data-title="Qty">
+                                <!-- Input Order -->
+                                <div class="input-group">
+                                    <div class="button minus">
+                                        <button type="button" class="btn btn-primary btn-number" data-type="minus" data-field="quant[{{ cart_item.id }}]">
+                                            <i class="ti-minus"></i>
+                                        </button>
+                                    </div>  
+                                    <input type="text" name="quant[{{ cart_item.id }}]" class="input-number cart-quantity-input" data-min="1" data-max="100" value="{{ cart_item.quantity }}" data-cart-item-id="{{ cart_item.id }}">
+
+                                    <div class="button plus">
+                                        <button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="quant[{{ cart_item.id }}]">
+                                            <i class="ti-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!--/ End Input Order -->
+                            </td>
+                            
+                            <td class="total-amount" data-title="Total"><span>${{ cart_item.subtotal }}</span></td>
+                            <td class="action" data-title="Remove">
+                                <a href="{% url 'remove_cart_item' cart_item.id %}">
+                                    <i class="ti-trash remove-icon"></i>
+                                </a>
+                            </td>
+                            
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!--/ End Shopping Summery -->
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <!-- Total Amount -->
+                <div class="total-amount">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-5 col-12">
+                            <!-- <div class="left">
+                                <div class="coupon">
+                                    <form action="#" target="_blank">
+                                        <input name="Coupon" placeholder="Enter Your Coupon">
+                                        <button class="btn">Apply</button>
+                                    </form>
+                                </div>
+                                <div class="checkbox">
+                                    <label class="checkbox-inline" for="2"><input name="news" id="2" type="checkbox"> Shipping (+10$)</label>
+                                </div>
+                            </div> -->
+                        </div>
+                        <div class="col-lg-4 col-md-7 col-12">
+                            <div class="right">
+                                <ul>
+                                    <li>Cart Subtotal<span class="cart-subtotal">${{ cart_subtotal }}</span></li>
+                                    <li>Shipping<span>Free</span></li>
+                                    <li>You Save<span>$20.00</span></li>
+                                    <li class="last">You Pay<span class="cart-total">${{ cart_total }}</span></li>
+                                </ul>
+                                <div class="button5">
+                                    <a href="#" class="btn">Checkout</a>
+                                    <a href="#" class="btn">Continue shopping</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--/ End Total Amount -->
+            </div>  
+        </div>
+    </div>
+</div>
+<!--/ End Shopping Cart -->
+
+    
+    	<!-- Start Shop Services Area  -->
+	<section class="shop-services section">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3 col-md-6 col-12">
+					<!-- Start Single Service -->
+					<div class="single-service">
+						<i class="ti-rocket"></i>
+						<h4>Free shiping</h4>
+						<p>Orders over $100</p>
+					</div>
+					<!-- End Single Service -->
+				</div>
+				<div class="col-lg-3 col-md-6 col-12">
+					<!-- Start Single Service -->
+					<div class="single-service">
+						<i class="ti-reload"></i>
+						<h4>Free Return</h4>
+						<p>Within 30 days returns</p>
+					</div>
+					<!-- End Single Service -->
+				</div>
+				<div class="col-lg-3 col-md-6 col-12">
+					<!-- Start Single Service -->
+					<div class="single-service">
+						<i class="ti-lock"></i>
+						<h4>Sucure Payment</h4>
+						<p>100% secure payment</p>
+					</div>
+					<!-- End Single Service -->
+				</div>
+				<div class="col-lg-3 col-md-6 col-12">
+					<!-- Start Single Service -->
+					<div class="single-service">
+						<i class="ti-tag"></i>
+						<h4>Best Peice</h4>
+						<p>Guaranteed price</p>
+					</div>
+					<!-- End Single Service -->
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Shop Newsletter -->
+	
+	<!-- Start Shop Newsletter  -->
+    
+	<!-- End Shop Newsletter -->
+	
+	
+	
+	<!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span class="ti-close" aria-hidden="true"></span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row no-gutters">
+                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                <!-- Product Slider -->
+									<div class="product-gallery">
+										<div class="quickview-slider-active">
+											<div class="single-slider">
+												<img src="images/modal1.jpg" alt="#">
+											</div>
+											<div class="single-slider">
+												<img src="images/modal2.jpg" alt="#">
+											</div>
+											<div class="single-slider">
+												<img src="images/modal3.jpg" alt="#">
+											</div>
+											<div class="single-slider">
+												<img src="images/modal4.jpg" alt="#">
+											</div>
+										</div>
+									</div>
+								<!-- End Product slider -->
+                            </div>
+                            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                                <div class="quickview-content">
+                                    <h2>Flared Shift Dress</h2>
+                                    <div class="quickview-ratting-review">
+                                        <div class="quickview-ratting-wrap">
+                                            <div class="quickview-ratting">
+                                                <i class="yellow fa fa-star"></i>
+                                                <i class="yellow fa fa-star"></i>
+                                                <i class="yellow fa fa-star"></i>
+                                                <i class="yellow fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                            </div>
+                                            <a href="#"> (1 customer review)</a>
+                                        </div>
+                                        <div class="quickview-stock">
+                                            <span><i class="fa fa-check-circle-o"></i> in stock</span>
+                                        </div>
+                                    </div>
+                                    <h3>$29.00</h3>
+                                    <div class="quickview-peragraph">
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia iste laborum ad impedit pariatur esse optio tempora sint ullam autem deleniti nam in quos qui nemo ipsum numquam.</p>
+                                    </div>
+									<div class="size">
+										<div class="row">
+											<div class="col-lg-6 col-12">
+												<h5 class="title">Size</h5>
+												<select>
+													<option selected="selected">s</option>
+													<option>m</option>
+													<option>l</option>
+													<option>xl</option>
+												</select>
+											</div>
+											<div class="col-lg-6 col-12">
+												<h5 class="title">Color</h5>
+												<select>
+													<option selected="selected">orange</option>
+													<option>purple</option>
+													<option>black</option>
+													<option>pink</option>
+												</select>
+											</div>
+										</div>
+									</div>
+                                    <div class="quantity">
+										<!-- Input Order -->
+										<div class="input-group">
+											<div class="button minus">
+												<button type="button" class="btn btn-primary btn-number" disabled="disabled" data-type="minus" data-field="quant[1]">
+													<i class="ti-minus"></i>
+												</button>
+											</div>
+											<input type="text" name="quant[1]" class="input-number"  data-min="1" data-max="1000" value="1">
+											<div class="button plus">
+												<button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="quant[1]">
+													<i class="ti-plus"></i>
+												</button>
+											</div>
+										</div>
+										<!--/ End Input Order -->
+									</div>
+									<div class="add-to-cart">
+										<a href="#" class="btn">Add to cart</a>
+										<a href="#" class="btn min"><i class="ti-heart"></i></a>
+										<a href="#" class="btn min"><i class="fa fa-compress"></i></a>
+									</div>
+                                    <div class="default-social">
+										<h4 class="share-now">Share:</h4>
+                                        <ul>
+                                            <li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
+                                            <li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
+                                            <li><a class="youtube" href="#"><i class="fa fa-pinterest-p"></i></a></li>
+                                            <li><a class="dribbble" href="#"><i class="fa fa-google-plus"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal end -->
+    
+        
+      <!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
+
+<!-- Cart Update Script -->
+<script>
+  // cart.js
+$(document).ready(function () {
+    // Prevent multiple event bindings
+    $(document).off('click', '.shopping-cart .button.plus');
+    $(document).off('click', '.shopping-cart .button.minus');
+
+    // Plus button click handler
+    $(document).on('click', '.shopping-cart .button.plus', function () {
+        var $input = $(this).parent().parent().find('input.input-number');
+        var newVal = parseInt($input.val());
+        $input.val(newVal);
+        updateSubtotal($(this).parent().parent(), newVal);
+    });
+
+    // Minus button click handler
+    $(document).on('click', '.shopping-cart .button.minus', function () {
+        var $input = $(this).parent().parent().find('input.input-number');
+        var newVal = parseInt($input.val());
+        if (newVal >= parseInt($input.attr('data-min'))) {
+            $input.val(newVal);
+            updateSubtotal($(this).parent().parent(), newVal);
+        }
+    });
+
+    // Add event listener for changes in quantity input value
+    $(document).on('change', '.cart-quantity-input', function () {
+        var newQuantity = parseInt($(this).val());
+        updateSubtotal($(this).closest('tr'), newQuantity);
+    });
+
+    function updateSubtotal($row, newQuantity) {
+        var quantityInput = $row.find('input.cart-quantity-input');
+        var cartItemId = quantityInput.attr('data-cart-item-id');
+        var price = parseFloat($row.find('.price span').text().replace('$', ''));
+        var total = (newQuantity * price).toFixed(2);
+        $row.find('.total-amount span').text('$' + total);
+
+        $.ajax({
+            url: '/update_cart_item/' + cartItemId + '/',
+            type: 'POST',
+            data: {
+                csrfmiddlewaretoken: window.CSRF_TOKEN,
+                new_quantity: newQuantity
+            },
+            success: function (data) {
+                if (data.success) {
+                    $row.find('.total-amount span').text('$' + total);
+
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            },
+            error: function () {
+                alert('Error: Something went wrong');
+            }
+        });
+    }
+    function updateCartTotals() {
+        var cartSubtotal = 0;
+        $('.total-amount span').each(function () {
+            var subtotalText = $(this).text().replace('$', '');
+            var subtotalValue = parseFloat(subtotalText);
+            if (!isNaN(subtotalValue)) {
+                cartSubtotal += subtotalValue;
+            }
+        });
+        $('.cart-subtotal').text('$' + cartSubtotal.toFixed(2));
+
+        // Calculate and update cart total (you can add shipping cost logic here)
+        var cartTotal = cartSubtotal; // Example: Cart total includes only subtotal
+        $('.cart-total').text('$' + cartTotal.toFixed(2));
+
+        // Update the displayed cart total on the page
+        $('#cart-total').text(cartTotal.toFixed(2));
+    }
+
+    // Initial call to update cart totals
+    updateCartTotals();
+    
+});
+
+
+
+    </script>
+    
+      
+{% endblock %}

@@ -10,12 +10,16 @@
 # General
 --------------------------------------------------------------*/
 
-:root {
-  scroll-behavior: smooth;
-}
 
 .file-input {
   display: none;
+}
+.file-upload-label:hover {
+  background-color: #e0e0e0;
+}
+
+:root {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -25,7 +29,7 @@ body {
 }
 
 a {
-  color: #4154f1;
+  color: #F7941D;
   text-decoration: none;
 }
 
@@ -82,7 +86,7 @@ h6 {
   right: 15px;
   bottom: 15px;
   z-index: 99999;
-  background: #4154f1;
+  background: #F7941D;
   width: 40px;
   height: 40px;
   border-radius: 4px;
@@ -299,7 +303,7 @@ h6 {
 
 .accordion-flush .accordion-button:not(.collapsed) {
   box-shadow: none;
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .accordion-flush .accordion-body {
@@ -347,13 +351,13 @@ h6 {
 
 .nav-tabs-bordered .nav-link:hover,
 .nav-tabs-bordered .nav-link:focus {
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .nav-tabs-bordered .nav-link.active {
   background-color: #fff;
-  color: #4154f1;
-  border-bottom: 2px solid #4154f1;
+  color: #F7941D;
+  border-bottom: 2px solid #F7941D;
 }
 
 /*--------------------------------------------------------------
@@ -370,14 +374,14 @@ h6 {
 }
 
 .logo img {
-  max-height: 26px;
-  margin-right: 6px;
+  max-height: 35px;
+  /* margin-right: 6px; */
 }
 
 .logo span {
   font-size: 26px;
   font-weight: 700;
-  color: #012970;
+  color: #9c640f;
   font-family: "Nunito", sans-serif;
 }
 
@@ -689,7 +693,7 @@ h6 {
   align-items: center;
   font-size: 15px;
   font-weight: 600;
-  color: #4154f1;
+  color: #F7941D;
   transition: 0.3;
   background: #f6f9ff;
   padding: 10px 15px;
@@ -699,7 +703,7 @@ h6 {
 .sidebar-nav .nav-link i {
   font-size: 16px;
   margin-right: 10px;
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .sidebar-nav .nav-link.collapsed {
@@ -712,12 +716,12 @@ h6 {
 }
 
 .sidebar-nav .nav-link:hover {
-  color: #4154f1;
+  color: #F7941D;
   background: #f6f9ff;
 }
 
 .sidebar-nav .nav-link:hover i {
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .sidebar-nav .nav-link .bi-chevron-down {
@@ -755,11 +759,11 @@ h6 {
 
 .sidebar-nav .nav-content a:hover,
 .sidebar-nav .nav-content a.active {
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .sidebar-nav .nav-content a.active i {
-  background-color: #4154f1;
+  background-color: #F7941D;
 }
 
 /*--------------------------------------------------------------
@@ -782,7 +786,7 @@ h6 {
 
 .dashboard .filter .icon:hover,
 .dashboard .filter .icon:focus {
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .dashboard .filter .dropdown-header {
@@ -826,7 +830,7 @@ h6 {
 }
 
 .dashboard .sales-card .card-icon {
-  color: #4154f1;
+  color: #F7941D;
   background: #f6f6fe;
 }
 
@@ -911,7 +915,7 @@ h6 {
 }
 
 .dashboard .news h4 a:hover {
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .dashboard .news p {
@@ -1059,7 +1063,7 @@ h6 {
 .faq .basic h6 {
   font-size: 18px;
   font-weight: 600;
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .faq .basic p {
@@ -1076,7 +1080,7 @@ h6 {
 .contact .info-box i {
   font-size: 38px;
   line-height: 0;
-  color: #4154f1;
+  color: #F7941D;
 }
 
 .contact .info-box h3 {
@@ -1143,7 +1147,7 @@ h6 {
 
 .contact .php-email-form input:focus,
 .contact .php-email-form textarea:focus {
-  border-color: #4154f1;
+  border-color: #F7941D;
 }
 
 .contact .php-email-form input {
@@ -1155,7 +1159,7 @@ h6 {
 }
 
 .contact .php-email-form button[type=submit] {
-  background: #4154f1;
+  background: #F7941D;
   border: 0;
   padding: 10px 30px;
   color: #fff;
@@ -1187,7 +1191,7 @@ h6 {
 .error-404 h1 {
   font-size: 180px;
   font-weight: 700;
-  color: #4154f1;
+  color: #F7941D;
   margin-bottom: 0;
   line-height: 150px;
 }
@@ -1218,12 +1222,13 @@ h6 {
 /*--------------------------------------------------------------
 # Footer
 --------------------------------------------------------------*/
-.footer {
+/* .footer {
   padding: 20px 0;
   font-size: 14px;
   transition: all 0.3s;
   border-top: 1px solid #cddfff;
 }
+
 
 .footer .copyright {
   text-align: center;
@@ -1235,4 +1240,119 @@ h6 {
   text-align: center;
   font-size: 13px;
   color: #012970;
+} */
+
+
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#footer {
+  
+  padding: 20px 0;
+  font-size: 14px;
+  border-top: 1px solid #cddfff;
+  text-align: center;
+  transition: all 0.3s;
+  margin-top: auto; /* Pushes the footer to the bottom */
+}
+
+#footer .copyright, #footer .credits {
+  color: #012970;
+}
+
+#footer .credits {
+  padding-top: 5px;
+  font-size: 13px;
+}
+
+
+
+
+.product-image-box {
+  width: 150px; /* Set the desired width */
+  height: 150px; /* Set the desired height */
+  overflow: hidden; /* Hide overflow if the image is larger than the box */
+}
+.product-image-box img {
+  width: 100%; /* Make the image fit the box */
+  height: 100%; /* Make the image fit the box */
+  object-fit: cover; /* Maintain the aspect ratio and cover the box */
+}
+
+
+/* Custom CSS for DataTables search bar */
+.dataTables_wrapper .dataTables_filter {
+  float: right;
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+/* Styling the search input */
+.dataTables_wrapper .dataTables_filter input {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+
+
+
+
+
+/* Custom CSS for DataTables paginator */
+.dataTables_wrapper .dataTables_paginate {
+  float: right;
+  padding-top: 5px;
+}
+
+/* Styling for pagination buttons */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  padding: 5px 10px;
+  margin-right: 5px;
+  border: 1px solid #6c757d;
+  border-radius: 4px;
+  cursor: pointer;
+  
+}
+
+/* Styling for the active pagination button */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+  
+}
+
+/* Styling for the previous and next pagination buttons */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous, 
+.dataTables_wrapper .dataTables_paginate .paginate_button.next {
+  padding: 5px 10px;
+  margin-right: 5px;
+  border: 1px solid #6c757d;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: transparent;
+  color: #007bff;
+  
+  
+}
+
+/* Styling for the active previous and next pagination buttons */
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous:hover, 
+.dataTables_wrapper .dataTables_paginate .paginate_button.next:hover {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+  
 }

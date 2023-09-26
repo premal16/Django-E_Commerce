@@ -1,35 +1,33 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="custom-order-list">
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped display" id="order-table">
         <thead class="table-dark">
             <tr>
                 <th>ID</th>
                 <th>User</th>
                 <th>Status</th>
                 <th>Total Amount</th>
-                <th>Timestamp</th>
-                <th>Actions</th>
-                <!-- <th>count</th> -->
+                <th>Date</th>
+                <th>Order Status</th>
             </tr>
         </thead>
         <tbody>
-            
             {% for order in orders %}
                 <tr>
                     <td><a href="{% url 'admin-order-detail' order.pk %}" class="text-primary">{{ order.id }}</a></td>
                     <td>{{ order.user }}</td>
                     <td>{{ order.status }}</td>
                     <td>{{ order.total_amount }}</td>
-                    <td>{{ order.timestamp }}</td>
+                    <td>{{ order.date }}</td>
                     <td>
                         <form class="d-flex align-items-center" method="post" action="{% url 'admin-order-change-status' order.pk %}">
                             {% csrf_token %}
-                            <select name="new_status" class="form-control me-2">
-                                <option value="Pending">Pending</option>
-                                <option value="Processing">Processing</option>
-                                <option value="Shipped">Shipped</option>
-                                <option value="Delivered">Delivered</option>
+                            <select name="new_status" class="form-select me-2">
+                                <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="Processing" {% if order.status == 'Processing' or 'processing' %}selected{% endif %}>Processing</option>
+                                <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
                             </select>
                             <button type="submit" class="btn btn-primary btn-sm">Change Status</button>
                         </form>
@@ -39,4 +37,19 @@
         </tbody>
     </table>
 </div>
+
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#order-table').DataTable({
+            "dom": '<"d-flex justify-content-between"lf>t<"d-flex justify-content-end"p>',
+            "language": {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search...",
+            }
+        });
+    });
+</script>
 {% endblock %}

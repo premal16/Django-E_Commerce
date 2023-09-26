@@ -1,0 +1,364 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+{% load static %}
+	<!-- Breadcrumbs -->
+	<div class="breadcrumbs">
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					<div class="bread-inner">
+						<ul class="bread-list">
+							<li><a href="{% url 'user-home' %}">Home<i class="ti-arrow-right"></i></a></li>
+							<li class="active"><a href="{% url 'cart' %}">Cart</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End Breadcrumbs -->
+
+<!-- Shopping Cart -->
+<div class="shopping-cart section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                {% if cart_items %}
+                <!-- Shopping Summery -->
+                <table class="table shopping-summery">
+                    <thead>
+                        <tr class="main-hading">
+                            <th>PRODUCT</th>
+                            <th>NAME</th>
+                            <th class="text-center">UNIT PRICE</th>
+                            <th class="text-center">QUANTITY</th>
+                            <th class="text-center">TOTAL</th>
+                            <th class="text-center"><i class="ti-trash remove-icon"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cart_item in cart_items %}
+                        <tr>
+                            <td class="image" data-title="No">
+                                <img src="{{ cart_item.product.product_image.url }}" alt="{{ cart_item.product.label }}">
+                            </td>
+                            <td class="product-des" data-title="Description">
+                                <p class="product-name"><a href="#">{{ cart_item.product.label }}</a></p>
+                                <p class="product-des">{{ cart_item.product.description }}</p>
+                            </td>
+                            <td class="price" data-title="Price">
+                                <span class="product-price">{{ cart_item.product.price }}</span>
+                            </td>
+                            
+
+                            <td class="qty" data-title="Qty">
+                                <!-- Input Order -->
+                                <div class="input-group">
+                                    <div class="button minus">
+                                        <button type="button" class="btn btn-primary btn-number" data-type="minus" data-field="quant[{{ cart_item.id }}]">
+                                            <i class="ti-minus"></i>
+                                        </button>
+                                    </div>  
+                                    <input type="text" name="quant[{{ cart_item.id }}]" class="input-number cart-quantity-input" data-min="1" data-max="100" value="{{ cart_item.quantity }}" data-cart-item-id="{{ cart_item.id }}">
+
+                                    <div class="button plus">
+                                        <button type="button" class="btn btn-primary btn-number" data-type="plus" data-field="quant[{{ cart_item.id }}]">
+                                            <i class="ti-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!--/ End Input Order -->
+                            </td>
+                            
+                            <td class="new-total-amount" data-title="Total"><span>{{ cart_item.subtotal }}</span></td>
+                            <td class="action" data-title="Remove">
+                                <a href="{% url 'remove_cart_item' cart_item.id %}">
+                                    <i class="ti-trash remove-icon"></i>
+                                </a>
+                            </td>
+                            
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!--/ End Shopping Summery -->
+                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <!-- Total Amount -->
+                <div class="total-amount">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-5 col-12">
+                            <!-- <div class="left">
+                                <div class="coupon">
+                                    <form action="#" target="_blank">
+                                        <input name="Coupon" placeholder="Enter Your Coupon">
+                                        <button class="btn">Apply</button>
+                                    </form>
+                                </div>
+                                <div class="checkbox">
+                                    <label class="checkbox-inline" for="2"><input name="news" id="2" type="checkbox"> Shipping (+10$)</label>
+                                </div>
+                            </div> -->
+                        </div>
+                        <div class="col-lg-4 col-md-7 col-12">
+                            <div class="right">
+                                <ul>
+                                    <li>Cart Subtotal <span class="cart-total">₹ {{ cart_subtotal }}</span></li>
+                                    <li>Shipping<span>Free</span></li>
+                                      
+                                    <li>You Pay<span class="cart-total">₹ {{ cart_total }}</span></li>
+                                </ul>
+                                <div class="button5">
+                                    <a href="{% url 'checkout' %}" class="btn">Checkout</a>
+                                    <a href="{% url 'checkout' %}" class="btn">Continue shopping</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <h3>Your cart is empty.</h3>
+                {% endif %}
+                <!--/ End Total Amount -->
+            </div>
+        </div>
+    </div>
+</div>
+<!--/ End Shopping Cart -->
+
+    
+	<!-- Start Shop Newsletter  -->
+
+	<!-- End Shop Newsletter -->
+	
+	
+	
+	<!-- Modal -->
+     
+        <!-- Modal end -->
+    
+        
+      <!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
+
+<!-- Cart Update Script -->
+<script>
+    // $(document).ready(function () {
+    //     // Prevent multiple event bindings
+    //     $(document).off('click', '.shopping-cart .button.plus');
+    //     $(document).off('click', '.shopping-cart .button.minus');
+
+    //     // Plus button click handler
+    //     $(document).on('click', '.shopping-cart .button.plus', function () {
+    //         var $input = $(this).parent().parent().find('input.input-number');
+    //         var newVal = parseInt($input.val());
+    //         $input.val(newVal);
+    //         updateSubtotal($(this).closest('tr'), newVal);
+    //     });
+
+    //     // Minus button click handler
+    //     $(document).on('click', '.shopping-cart .button.minus', function () {
+    //         var $input = $(this).parent().parent().find('input.input-number');
+    //         var newVal = parseInt($input.val());
+    //         if (newVal >= parseInt($input.attr('data-min'))) {
+    //             $input.val(newVal);
+    //             updateSubtotal($(this).closest('tr'), newVal);
+    //         }
+    //     });
+
+    //     function updateSubtotal($row, newQuantity) {
+    //         var $quantityInput = $row.find('input.cart-quantity-input');
+    //         var quantity = parseInt($quantityInput.val());
+    //         var price = parseFloat($row.find('.product-price').text().replace('$', ''));
+    //         var total = quantity * price;
+    //         $row.find('.total-amount span').text('$' + total.toFixed(2));
+
+    //         $.ajax({
+    //             url: '/update_cart_item/' + $quantityInput.data('cart-item-id') + '/',
+    //             type: 'POST',
+    //             data: {
+    //                 csrfmiddlewaretoken: window.CSRF_TOKEN,
+    //                 new_quantity: newQuantity
+    //             },
+    //             success: function (data) {
+    //                 if (data.success) {
+    //                     // Update cart totals
+    //                     updateCartTotal();
+    //                 } else {
+    //                     alert('Error: ' + data.message);
+    //                 }
+    //             },
+    //             error: function () {
+    //                 alert('Error: Something went wrong');
+    //             }
+    //         });
+    //     }
+    //     function updateCartTotal() {
+    //         var cartTotal = 0;
+    //         $('.total-amount span').each(function () {
+    //             var subtotal = parseFloat($(this).text().replace('$', '')) || 0; // Handle NaN by defaulting to 0
+    //             console.log("subbbbbbbb",subtotal,typeof(subtotal))
+    //             cartTotal += subtotal;
+    //         });
+    //         $('.cart-total').text('$' + cartTotal.toFixed(2));
+    //     }
+
+    //     // Initial update of the cart total
+    //     updateCartTotal()
+    // });
+
+
+
+
+
+
+
+
+    // $(document).ready(function () {
+    //     // Plus button click handler
+    //     $('.button.plus').click(function () {
+    //         var $input = $(this).closest('tr').find('.cart-quantity-input');
+    //         var newVal = parseInt($input.val()) + 1;
+    //         $input.val(newVal);
+    //         updateSubtotal($(this).closest('tr'));
+    //     });
+
+    //     // Minus button click handler
+    //     $('.button.minus').click(function () {
+    //         var $input = $(this).closest('tr').find('.cart-quantity-input');
+    //         var newVal = parseInt($input.val()) - 1;
+    //         if (newVal >= parseInt($input.attr('data-min'))) {
+    //             $input.val(newVal);
+    //             updateSubtotal($(this).closest('tr'));
+    //         }
+    //     });
+
+    //     function updateSubtotal($row) {
+    //         var $quantityInput = $row.find('.cart-quantity-input');
+    //         var quantity = parseInt($quantityInput.val()) || 0;
+    //         var price = parseFloat($row.find('.product-price').text().replace('$', '')) || 0;
+    //         var total = quantity * price;
+    //         $row.find('.total-amount span').text('$' + total.toFixed(2));
+
+    //         // AJAX call to update the server
+    //         $.ajax({
+    //             url: '/update_cart_item/' + $quantityInput.data('cart-item-id') + '/',
+    //             type: 'POST',
+    //             data: {
+    //                 csrfmiddlewaretoken: window.CSRF_TOKEN,
+    //                 new_quantity: quantity
+    //             },
+    //             success: function (data) {
+    //                 if (data.success) {
+    //                     // Server update successful
+    //                     updateCartTotal();
+    //                 } else {
+    //                     alert('Error: ' + data.message);
+    //                 }
+    //             },
+    //             error: function () {
+    //                 alert('Error: Something went wrong');
+    //             }
+    //         });
+    //     }
+
+    //     function updateCartTotal() {
+    //         var cartTotal = 0;
+    //         $('.total-amount span').each(function () {
+    //             var subtotal = parseFloat($(this).text().replace('$', '')) || 0;
+    //             console.log("subbbbbbbb",subtotal,typeof(subtotal))
+
+    //             cartTotal += subtotal;
+    //         });
+    //         $('.cart-total').text('$' + cartTotal.toFixed(2));
+    //     }
+
+    //     // Initial update of the cart total
+    //     updateCartTotal();
+    // });
+
+
+
+
+
+    <!-- Cart Update Script -->
+
+    $(document).ready(function () {
+    // Plus button click handler
+    $('.button.plus').click(function () {
+        var $input = $(this).closest('tr').find('.cart-quantity-input');
+        var newVal = parseInt($input.val());
+        $input.val(newVal);
+        updateSubtotal($(this).closest('tr'));
+    });
+
+    // Minus button click handler
+    $('.button.minus').click(function () {
+        var $input = $(this).closest('tr').find('.cart-quantity-input');
+        var newVal = parseInt($input.val());
+        if (newVal >= parseInt($input.attr('data-min'))) {
+            $input.val(newVal);
+            updateSubtotal($(this).closest('tr'));
+        }
+    });
+
+    function updateSubtotal($row) {
+    var $quantityInput = $row.find('.cart-quantity-input');
+    var quantity = parseInt($quantityInput.val()) || 0;
+    var price = parseFloat($row.find('.product-price').text().replace('$', '')) || 0;
+    console.log('Quantity:', quantity);
+    console.log('Price:', price);
+    var total = quantity * price;
+    $row.find('.new-total-amount').text(total.toFixed(2));
+
+    // AJAX call to update the server
+    $.ajax({
+        url: '/update_cart_item/' + $quantityInput.data('cart-item-id') + '/',
+        type: 'POST',
+        data: {
+            csrfmiddlewaretoken: window.CSRF_TOKEN,
+            new_quantity: quantity
+        },
+        success: function (data) {
+            if (data.success) {
+                // Server update successful
+                updateCartTotal(); // This line calls the updateCartTotal function
+            } else {
+                alert('Error: ' + data.message);
+            }
+        },
+        error: function () {
+            alert('Error: Something went wrong');
+        }
+    });
+}
+
+function updateCartTotal() {
+    var cartTotal = 0;
+    $('.new-total-amount').each(function () {
+        var total = parseFloat($(this).text().replace('$', '')) || 0;
+           console.log("totasll:-",total) 
+        cartTotal += total;
+        console.log("cart..", cartTotal)
+    });
+    $('.cart-total').text('₹ ' + cartTotal.toFixed(2));
+}
+
+// Initial update of the cart total
+updateCartTotal();
+
+    });
+
+
+
+
+
+</script>
+    
+
+        
+{% endblock %}

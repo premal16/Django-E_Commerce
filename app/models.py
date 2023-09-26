@@ -80,9 +80,18 @@ class Order(models.Model):
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product = models.ManyToManyField('Product')
+    name = models.CharField(max_length=50,default=False)
+    email = models.EmailField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='processing')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True)
+
+    # added two fields
+    payment_method = models.CharField(max_length=20,default=False)
+    address = models.CharField(max_length=200, default='', blank=True)
+    mobile_number = models.CharField(max_length=12, default='', blank=True)
+    payment_done = models.BooleanField(default=False)
 
 
     def __str__(self):
@@ -101,3 +110,16 @@ class OrderItem(models.Model):
     
     def total_price(self):
         return self.quantity * self.price
+    
+
+class CartItem(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)  # Assuming you have a Product model
+    quantity = models.PositiveIntegerField(default=1)
+    # Add more fields as needed, e.g., price, date_added, etc.
+    def subtotal(self):
+        return self.product.price * self.quantity
+    
+    def remove(self):
+        # Method to remove the cart item
+        self.delete()

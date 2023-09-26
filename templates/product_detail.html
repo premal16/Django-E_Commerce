@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container">
-    <section class="section product-detail min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+    <!-- <section class="section product-detail min-vh-100 d-flex flex-column align-items-center justify-content-center py-4"> -->
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-md-10 d-flex flex-column align-items-center justify-content-center">
                     <div class="product-card border rounded p-4">
                         <div class="product-image">
-                            <img src="{{ product.product_image.url }}" alt="{{ product.label }}">
+                            
+                            <div class="product-image">
+                                <img src="{{ product.product_image.url }}" alt="{{ product.label }}" class="fixed-image">
+                            </div>
                         </div>
                         <div class="product-details pt-4">
                             <h2>{{ product.label }}</h2>
@@ -24,6 +27,10 @@
                                 <button type="submit" class="btn btn-success ms-2">Update Product</button>
                             </form>
                         </div>
+                        <center>
+                        <a href="{% url 'product-list' %}" class="btn btn-secondary mt-3">Back</a>
+                        </center>
+
                     </div>
                 </div>
             </div>
@@ -31,3 +38,11 @@
     </section>
 </div>
 {% endblock %}
+
+<style>
+    .fixed-image {
+        width: 300px; /* Set the desired width */
+        height: 300px; /* Set the desired height */
+        object-fit: cover; /* Maintain aspect ratio and cover the container */
+    }
+</style>

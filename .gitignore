@@ -3,3 +3,6 @@ app/__pycache__
 app/migrations
 my_project/__pycache__
 template_original/
+static-original/
+static/admin/
+.env

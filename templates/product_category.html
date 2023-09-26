@@ -1,0 +1,6 @@
+<!-- category_list.html -->
+<ul>
+    {% for category in categories %}
+      <li><a href="{% url 'product-list-by-category' category.id %}">{{ category.name }}</a></li>
+    {% endfor %}
+  </ul>
