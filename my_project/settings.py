@@ -33,7 +33,7 @@ STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -51,9 +51,11 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-
-
     'social_django',
+    'mail_templated',
+    'celery',
+    'django_crontab',
+
     
 ]
 
@@ -75,7 +77,7 @@ ROOT_URLCONF = 'my_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR,'templates'],
+        'DIRS': [os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,6 +105,26 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'eshop',     # Replace with your RDS database name
+#         'USER': 'testrds',     # Replace with your RDS database user
+#         'PASSWORD': 'password',  # Replace with your RDS database password
+#         'HOST': 'rds-database.ca8dm8ejnmj9.us-east-1.rds.amazonaws.com',      # Replace with your RDS endpoint
+#         'PORT': '5432',                  # Change to your RDS port if not 5432
+#     }
+# }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'eshop',
+#         'USER': 'testrds',
+#         'PASSWORD': 'password',
+#         'HOST': 'rds-database.ca8dm8ejnmj9.us-east-1.rds.amazonaws.com',
+#         'PORT': '5432',  # Replace with the appropriate port for your database engine
+#     }
+# }
 
 
 # Password validation
@@ -192,8 +214,107 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_REDIRECT_URL = 'home'
 
 
-
-
-
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+
+
+# redis
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379/0',  # Replace with your Redis server URL
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#         }
+#     }
+# }
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'premal@moontechnolabs.com'
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+
+
+
+# settings.py
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Use Redis as a message broker
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Use Redis for storing task results (optional)
+# FILE_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024 # 10 Mb limit
+# CELERY_ACCEPT_CONTENT = ['pickle', 'application/json']  
+# Configure Celery to use JSON as the default message format (optional but recommended)
+# CELERY_ACCEPT_CONTENT = ['json']
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'pickle'
+# CELERY_TASK_SERIALIZER = 'pickle'
+# CELERY_TIMEZONE = 'UTC'
+
+# this is for docker celery
+
+# CELERY_BROKER_URL = 'redis://redis:6379/0'
+# CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_BROKER_URL = 'redis://my_project_redis_1:6379/0'
+CELERY_RESULT_BACKEND = 'redis://my_project_redis_1:6379/0'
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+
+# CRONJOBS = [
+#     ('*/5 * * * * *', 'app.cron.send_email_reminders'),  # Runs every 5 seconds
+# ]
+
+# CRONJOBS = [
+#     ('*/1 * * * *', 'app.cron.my_cron_job')
+# ]
+
+
+# CRONJOBS = [
+#     ('*/1 * * * *', 'app.tasks.my_cron_job'),  # Schedule the hello_world task
+# ]
+
+CRONJOBS = [
+    ('*/1 * * * *', 'app.cron_tasks.send_reminders'),  # Schedule to run daily at 8:00 AM
+]
+CRONJOBS_DJANGO_MANAGE = "manage.py"
+
+
+
+# import os
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'file': {
+#             'level': 'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'your_log_file.log'),  # Change to your desired log file name
+#         },
+#     },
+#     'root': {
+#         'handlers': ['file'],
+#         'level': 'INFO',
+#     },
+# }
+
+
+
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://redis:6379/',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}

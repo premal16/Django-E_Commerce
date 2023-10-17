@@ -15,7 +15,17 @@ from django.http import Http404,JsonResponse,HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
+from django.core.cache import cache
+from django.template.loader import render_to_string
+from mail_templated import send_mail
+from io import BytesIO
 
+import os
+from weasyprint import HTML
+
+from templated_email import send_templated_mail
+
+from django.core.mail import EmailMessage
 
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 from allauth.socialaccount import providers
@@ -23,6 +33,11 @@ from allauth.socialaccount.helpers import complete_social_login
 from allauth.socialaccount.models import SocialApp
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2CallbackView, OAuth2LoginView
+
+
+from .task import *
+
+
 
 import stripe
 from django.conf import settings
@@ -203,6 +218,7 @@ def product_update(request, product_id):
         form = ProductForm1(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
+            cache.delete('cached_products')
             return redirect('product-detail', product_id=product_id)
     else:
         form = ProductForm(instance=product)
@@ -214,6 +230,7 @@ def product_delete(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     if request.method == 'POST':
         product.delete()
+        cache.delete('cached_products')
         return redirect('home')
     return render(request, 'product_delete.html', {'product': product})
 
@@ -223,6 +240,7 @@ def add_product(request):
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            cache.delete('cached_products')
             return redirect('home')
     else:
         form = ProductForm()
@@ -321,8 +339,26 @@ def session_try(request):
 @login_required(login_url='/login/')
 def user_home(request):
     selected_category_id = request.GET.get('category')
-    products = Product.objects.all()
-    categories = Category.objects.all()
+    # products = Product.objects.all()
+    # categories = Category.objects.all()
+    # Check if the products and categories are in the cache
+    products = cache.get('cached_products')
+    print("this product from cache")
+
+    categories = cache.get('cached_categories')
+    print("this categories from cashe")
+
+
+    if products is None:
+        print("this product from DB")
+        products = Product.objects.all()
+        cache.set('cached_products', products, 300) 
+        print("in dbdbdbdbdbdbdbdb")
+    
+    if categories is None:
+        categories = Category.objects.all()
+        print("this categories from DB")
+        cache.set('cached_categories', categories, 360)
 
     if selected_category_id:
         products = products.filter(category__id=selected_category_id)
@@ -335,11 +371,27 @@ def user_home(request):
 
     return render(request, 'shop/index.html', context)
 
+
+
 @login_required(login_url='/login/')
 def user_product(request):
     selected_category_id = request.GET.get('category')
-    products = Product.objects.all()
-    categories = Category.objects.all()
+    # products = Product.objects.all()
+    # categories = Category.objects.all()
+    products = cache.get('cached_products')
+    print("this product from cache")
+
+    categories = cache.get('cached_categories')
+    print("this categories from cashe")
+
+
+    if products is None:
+        products = Product.objects.all()
+        cache.set('cached_products', products, 300) 
+    
+    if categories is None:
+        categories = Category.objects.all()
+        cache.set('cached_categories', categories, 360)
 
     if selected_category_id:
         products = products.filter(category__id=selected_category_id)
@@ -359,12 +411,10 @@ def quick_view(request, product_id):
         product = get_object_or_404(Product, pk=product_id)
         product_data = {
             'product_image_url': product.product_image.url,
-            'product_name': product.label,  # Use the label field as the name
+            'product_name': product.label,  
             'product_price': product.price,
             'product_description': product.description,
-            # You might need to adjust the following fields based on your model structure
-            'product_size': '',  # Add the appropriate field from your model
-            'product_color': '',  # Add the appropriate field from your model
+
         }
         return JsonResponse(product_data)
     except Product.DoesNotExist:
@@ -389,11 +439,25 @@ def add_to_cart(request):
         # Check if the user already has this product in their cart
         cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
 
-        if not created:
-            # If the item already exists in the cart, update the quantity
-            cart_item.quantity += quantity
-            cart_item.save()
+        # if not created:
+        #     # If the item already exists in the cart, update the quantity
+        #     cart_item.quantity += quantity
+        #     cart_item.save()
 
+
+        if created:
+            # If the item was created (i.e., it's the first time), set the quantity to the provided value
+            cart_item.quantity = quantity
+        else:
+            # If the item already exists in the cart, increment the quantity
+            cart_item.quantity += quantity
+
+        # Save the cart item
+        cart_item.save()
+
+
+
+        cache.delete('cached_cart_items')
         return JsonResponse({'success': True, 'message': 'Product added to cart'})
     else:
         return JsonResponse({'success': False, 'message': 'Invalid request method'})
@@ -401,22 +465,34 @@ def add_to_cart(request):
 
 @login_required(login_url='/login/')
 def cart(request):
-    cart_subtotal = 0 
-    cart_items = CartItem.objects.filter(user=request.user)
+    # Check if the cart items are in the cache
+    cart_items = cache.get('cached_cart_items')
+
+    if cart_items is None:
+        # If not in the cache, query the database to get the cart items
+        cart_items = CartItem.objects.filter(user=request.user)
+
+        # Store the cart items queryset in the cache with a 20-second timeout
+        cache.set('cached_cart_items', cart_items, 200)
+
+    cart_subtotal = 0
     for cart_item in cart_items:
         cart_subtotal += cart_item.subtotal()
+    
     cart_total = cart_subtotal
+
     context = {
         'cart_items': cart_items,
         'cart_subtotal': cart_subtotal,
         'cart_total': cart_total,
     }
-    return render(request, 'shop/cart.html',context)
+    return render(request, 'shop/cart.html', context)
 
 @login_required(login_url='/login/')
 def remove_cart_item(request, cart_item_id):
     cart_item = get_object_or_404(CartItem, id=cart_item_id, user=request.user)
     cart_item.remove()  
+    cache.delete('cached_cart_items')
     return redirect('cart')
 
 
@@ -430,6 +506,7 @@ def update_cart_item(request, cart_item_id):
             if new_quantity > 0:
                 cart_item.quantity = new_quantity
                 cart_item.save()
+                cache.delete('cached_cart_items')
                 return JsonResponse({'success': True})
             else:
                 return JsonResponse({'success': False, 'message': 'Quantity must be greater than zero'})
@@ -460,7 +537,6 @@ def checkout(request):
                 'address': request.POST.get('address'),
                 'payment_method': request.POST.get('payment')
             }
-
 
             cart_total = cart_subtotal
 
@@ -518,42 +594,13 @@ def cancel(request):
     return render(request,'shop/cancel.html')
 
 
-
-# @csrf_exempt  # Ensure CSRF protection is disabled for this view
-# def webhook(request):
-#     print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-#     payload = request.body
-#     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-#     webhook_secret_key = settings.STRIPE_WEBHOOK_SECRET
-#     # Verify the event data using your Stripe secret key
-#     try:
-#         event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret_key)
-#     except ValueError as e:
-#         # Invalid payload
-#         return JsonResponse({'error': str(e)}, status=400)
-#     except stripe.error.SignatureVerificationError as e:
-#         # Invalid signature
-#         return JsonResponse({'error': str(e)}, status=400)
-
-#     if event.type == 'checkout.session.completed':
-#         # Payment was successful, create the order and clear the cart
-#         session = event.data.object
-        # order = create_order(session)  # Implement this function to create the order
-#         print("session..............",session)
-
-#         return JsonResponse({'status': 'success'})
-#     else:
-#         print('this is for not success')
-
-#     return JsonResponse({'status': 'ignored'})
-
-
 def success(request):
     cart_items = CartItem.objects.filter(user=request.user)
     if cart_items:
         cart_subtotal = 0
         for cart_item in cart_items:
             cart_subtotal += cart_item.subtotal()
+            
         cart_total = cart_subtotal
     checkout_data = request.session.get('checkout_data')
 
@@ -582,6 +629,19 @@ def success(request):
             quantity=cart_item.quantity,
             price=cart_item.product.price  
         )
+    # Generate and save the PDF invoice
+    # order_id = order.id
+
+    # pdf_response = generate_invoice_pdf(request, order.id)
+
+    cache.delete('cached_cart_items')
+    # handel_task.delay()
+
+    # print(order_id,'order_id')
+
+    # send_order_confirmation_email.apply_async(args=[order_id,pdf_response])
+    send_order_confirmation_email.delay(order.id)
+
     context = {
         'latest_order': order,
     }
@@ -647,3 +707,237 @@ class GoogleLoginCallback(View):
             return render(request, 'error.html', {'error_message': 'Google login is not configured.'})
         except OAuth2Error:
             return render(request, 'error.html', {'error_message': 'Error logging in with Google.'})
+        
+
+
+
+# def send_custom_email(request):
+#     subject = 'Hello, Django Email Template'
+#     from_email = 'premal@moontechnolabs.com'
+#     recipient_list = ['premal@moontechnolabs.com']
+
+#     send_mail(
+#         template_name='shop/email_template.html', 
+#         from_email=from_email,
+#         recipient_list=recipient_list,
+
+ 
+#         context={
+#             'greeting': 'Hi there!',
+#             'message': 'This is an email sent from a template in Django.',
+#         },
+#         subject=subject,
+#     )
+    
+    
+# def send_order_confirmation_email(request):
+#     subject = 'Hello, Django Email Template'
+#     from_email = 'premal@moontechnolabs.com'
+#     recipient_list = ['premal@moontechnolabs.com']
+#     message_body = 'This is an email sent from a template in Django.'
+
+#     # Create an EmailMessage instance
+#     email_message = EmailMessage(
+#         subject,
+#         message_body,
+#         from_email,
+#         recipient_list,
+#     )
+
+#     # Send the email
+#     email_message.send()
+
+#     # Pass the message body as a context variable to the template
+#     context = {'message_body': message_body}
+
+#     # Render the email_template.html template with the context
+#     return render(request, 'shop/email_template.html', context)    
+
+
+# def send_order_confirmation_email(request,order):
+#     # subject = f'Order Confirmation - Order #{order.order_number}'
+#     subject = 'Order Confirmation' 
+#     from_email = 'premal@moontechnolabs.com' 
+#     print("order email...............",order.email) # Replace with your email
+#     # print("this is order",order.product.label)
+#     recipient_list = [order.email]
+
+#     # Create the email message body with order details
+#     message_body = f'Thank you for placing an order with us.\n\n'
+#     message_body += f'Order Number: {order.id}\n'
+#     message_body += f'Customer: {order.name}\n'
+#     message_body += f'Address: {order.address}\n'
+#     message_body += f'Total Amount: ${order.total_amount}\n'
+#     message_body += 'Order Details:\n'
+
+#     # # You can iterate over order items
+#     for item in order.orderitem_set.all():
+#         message_body += f'- {item.product.label}: ${item.price} x {item.quantity}\n'
+
+#     # Create an EmailMessage instance
+#     email_message = EmailMessage(
+#         subject,
+#         message_body,
+#         from_email,
+#         recipient_list,
+#     )
+#     file_path = '/home/premal/Documents/Django_Project (copy)/my_project/static/eshop/images/monkey-3703230_640.jpg'  # Replace with the actual file path
+#     email_message.attach_file(file_path)
+#     # Send the email
+#     email_message.send()
+
+
+
+###
+
+# def send_order_confirmation_email(request, order,pdf_response):
+#     subject = f'Order Confirmation - Order #{order.id}'
+#     from_email = 'your-email@example.com'  # Replace with your email
+#     recipient_list = [order.email]
+
+#     # Create a context dictionary with dynamic data for the template
+#     context = {
+#         'customer_name': order.name,
+#         'order_number': order.id,
+#         'shipping_address': order.address,
+#         'total_amount': order.total_amount,
+#         # Add more dynamic data as needed
+#     }
+
+#     # Render the email template as a string
+#     email_content = render_to_string('shop/order_confirmation_email.html', context)
+
+#     # Create an EmailMessage instance
+#     email_message = EmailMessage(
+#         subject,
+#         email_content,
+#         from_email,
+#         recipient_list,
+#     )
+
+#     # file_path = '/home/premal/Documents/Django_Project (copy)/my_project/static/eshop/images/monkey-3703230_640.jpg'  # Replace with the actual file path
+#     # email_message.attach_file(file_path)
+
+#     file_name = f'invoice_{order.id}.pdf'
+#     email_message.attach(file_name, pdf_response.getvalue(), 'application/pdf')
+
+#     email_message.content_subtype = 'html'
+
+#     # Send the email
+#     email_message.send()
+
+####
+from django.utils.html import strip_tags 
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+
+# def generate_invoice_pdf(request, order_id):
+#     try:
+#         order = Order.objects.get(pk=order_id)
+
+#         # Create a PDF document
+#         buffer = BytesIO()
+#         doc = SimpleDocTemplate(buffer, pagesize=letter)
+
+#         # Create a list of flowable elements for the PDF content
+#         elements = []
+
+#         # Create a style for the content
+#         styles = getSampleStyleSheet()
+#         style = styles['Normal']
+
+#         # Create the HTML content using the HTML template
+#         invoice_content = render_to_string('shop/invoice_template.html', {'order': order})
+
+#         # Convert the HTML content to flowable elements
+#         html_content = Paragraph(invoice_content, style)
+#         elements.append(html_content)
+
+#         # Build the PDF document with the flowable elements
+#         doc.build(elements)
+
+#         # Get the value of the BytesIO buffer and return it as a PDF file
+#         pdf = buffer.getvalue()
+#         buffer.close()
+
+#         # Create an HttpResponse with the PDF content for download
+#         response = HttpResponse(content_type='application/pdf')
+#         response['Content-Disposition'] = f'attachment; filename=invoice_{order_id}.pdf'
+#         response.write(pdf)
+
+#         return response
+#     except Order.DoesNotExist:
+#         # Handle the case where the order does not exist
+#         return HttpResponseBadRequest("Order not found")
+
+# def generate_invoice_pdf(request, order_id):
+#     try:
+#         order = Order.objects.get(pk=order_id)
+#         print("order is",order)
+
+#         # Create HTML content from the template
+#         html_content = render_to_string('shop/invoice_template.html', {'order': order})
+
+#         # Generate PDF using WeasyPrint
+#         pdf_file = HTML(string=html_content).write_pdf()
+
+#         # Define the folder path where you want to store the PDF invoices
+#         invoice_folder = os.path.join(settings.MEDIA_ROOT, 'invoices')
+#          # Ensure the invoices folder exists; create it if it doesn't
+#         os.makedirs(invoice_folder, exist_ok=True)
+
+#         file_name = f'invoice_{order_id}.pdf'
+#         file_path = os.path.join(invoice_folder, file_name)
+
+#         # Save the PDF to the specified folder
+#         with open(file_path, 'wb') as pdf_file:
+#             pdf_file.write(pdf_file)
+
+#         # Create an HttpResponse with the PDF content for download
+#         response = HttpResponse(pdf_file, content_type='application/pdf')
+#         response['Content-Disposition'] = f'attachment; filename={file_name}'
+
+#         return response
+#     except Order.DoesNotExist:
+#         return HttpResponseBadRequest("Order not found")
+
+
+
+def generate_invoice_pdf(request, order_id):
+    try:
+        order = Order.objects.get(pk=order_id)
+        print("order is", order)
+
+        # Create HTML content from the template
+        html_content = render_to_string('shop/invoice_template.html', {'order': order})
+        presentational_hints = True
+        # Generate PDF using WeasyPrint
+        pdf_bytes = HTML(string=html_content, base_url=settings.STATIC_URL).write_pdf(presentational_hints=presentational_hints)
+        # Define the folder path where you want to store the PDF invoices
+        invoice_folder = os.path.join(settings.MEDIA_ROOT, 'invoices')
+
+        # Ensure the invoices folder exists; create it if it doesn't
+        os.makedirs(invoice_folder, exist_ok=True)
+
+        # Define the file path for the PDF (e.g., /media/invoices/invoice_123.pdf)
+        file_name = f'invoice_{order_id}.pdf'
+        file_path = os.path.join(invoice_folder, file_name)
+
+        # Save the PDF content to the specified file
+        with open(file_path, 'wb') as pdf_file:
+            pdf_file.write(pdf_bytes)
+
+        # Create an HttpResponse with the PDF content for download
+        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename={file_name}'
+
+        return response
+    except Order.DoesNotExist:
+        return HttpResponseBadRequest("Order not found")
+    
+
+
+
+
+def send_email_reminders(request):
+    print("this is from crone job..................")

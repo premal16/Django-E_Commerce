@@ -45,18 +45,13 @@ urlpatterns = [
     path('cancel/',views.cancel, name='cancel'),
 
     path('extra/',views.extra, name='extra'),
+    path('send-mail/',views.send_order_confirmation_email, name='mail'),
 
 
+    path('generate_invoice/<int:order_id>/', views.generate_invoice_pdf, name='generate_invoice_pdf'),
 
 
     # path('google/callback/', views.GoogleLoginCallback.as_view(), name='google_login_callback'),
-
-
-
-    
-
-
-
 
 ]
 

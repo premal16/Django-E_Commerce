@@ -27,3 +27,10 @@ def cart_total(context):
 @register.filter
 def starts_with(value, arg):
     return value.startswith(arg)
+
+@register.filter
+def absolute_url_local(value):
+    # Set the scheme and domain for your local development environment
+    scheme = "http"
+    domain = "localhost"
+    return f"{scheme}://{domain}{value}"
